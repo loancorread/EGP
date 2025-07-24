@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Informe de Gestión Pedagógica - Escuela Kallfü Mapu</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8;
+            color: #334155;
+        }
+        .tab-button {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
+            background-color: #e2e8f0;
+            color: #475569;
+        }
+        .tab-button.active {
+            background-color: #3b82f6;
+            color: white;
+            box-shadow: 0 4px 14px 0 rgba(59, 130, 246, 0.3);
+        }
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .card {
+            background-color: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .chart-container {
+            position: relative;
+            height: 400px; /* Fixed height for consistency */
+            width: 100%;
+        }
+        /* Style for the custom message box */
+        .message-box-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .message-box {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            max-width: 400px;
+        }
+        .message-box button {
+            background-color: #3b82f6;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            margin-top: 1rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .message-box button:hover {
+            background-color: #2563eb;
+        }
+    </style>
+</head>
+<body class="p-6 md:p-10">
+    <header class="text-center mb-10">
+        <h1 class="text-4xl font-bold text-gray-800 mb-2">Informe de Gestión Pedagógica</h1>
+        <h2 class="text-xl text-gray-600">Escuela Intercultural Kallfü Mapu, Ñuñoa</h2>
+        <p class="text-gray-500">Vía Ocho 1081. Ñuñoa, Santiago | km.contacto@edununoa.cl</p>
+    </header>
+
+    <div class="max-w-7xl mx-auto bg-white rounded-2xl shadow-xl p-6 md:p-8">
+        <!-- Tab Navigation -->
+        <nav class="flex flex-wrap justify-center gap-4 mb-8">
+            <button class="tab-button active" onclick="openTab('riskStudents')">Estudiantes en Riesgo de Repitencia</button>
+            <button class="tab-button" onclick="openTab('lessonPlans')">Leccionarios sin Firmar</button>
+            <button class="tab-button" onclick="openTab('readingDevelopment')">Desarrollo de la Lectura</button>
+            <button class="tab-button" onclick="openTab('teamMeetings')">Reuniones de Equipo de Aula</button>
+            <button class="tab-button" onclick="openTab('individualStats')">Estadísticas Individuales</button>
+        </nav>
+
+        <!-- Tab Content: Estudiantes en Riesgo de Repitencia -->
+        <div id="riskStudents" class="tab-content active">
+            <h3 class="text-2xl font-semibold text-gray-700 mb-6">Estudiantes con Riesgo de Repitencia</h3>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                <div class="card">
+                    <h4 class="text-xl font-medium text-gray-700 mb-3">Resumen General</h4>
+                    <p class="text-gray-600 mb-2"><span class="font-semibold">Estudiantes en riesgo:</span> 152</p>
+                    <p class="text-gray-600 mb-2"><span class="font-semibold">Criterio 1 (bajo desempeño):</span> 7</p>
+                    <p class="text-gray-600 mb-2"><span class="font-semibold">Criterio 3 (calificaciones incompletas):</span> 2</p>
+                    <p class="text-gray-600 mb-2"><span class="font-semibold">Criterio 4 (inasistencia > 15%):</span> 143</p>
+                    <p class="text-gray-600 mb-2"><span class="font-semibold">Asistencia media del grupo:</span> 73.8%</p>
+                    <p class="text-gray-600 mb-2"><span class="font-semibold">Promedio general del grupo:</span> 5.81</p>
+                    <p class="text-gray-600">El 94% del riesgo proviene de la inasistencia crónica.</p>
+                </div>
+                <div class="card md:col-span-2">
+                    <h4 class="text-xl font-medium text-gray-700 mb-3">Distribución por Criterio</h4>
+                    <div class="chart-container">
+                        <canvas id="riskCriteriaChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-8">
+                <h4 class="text-xl font-medium text-gray-700 mb-3">Distribución por Curso y Criterio</h4>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full bg-white rounded-lg shadow-sm">
+                        <thead>
+                            <tr class="bg-blue-500 text-white">
+                                <th class="py-3 px-4 text-left rounded-tl-lg">Curso</th>
+                                <th class="py-3 px-4 text-left">C1</th>
+                                <th class="py-3 px-4 text-left">C3</th>
+                                <th class="py-3 px-4 text-left">C4</th>
+                                <th class="py-3 px-4 text-left rounded-tr-lg">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-b border-gray-200 hover:bg-gray-50">
+                                <td class="py-3 px-4">1.° A</td><td>-</td><td>-</td><td>21</td><td>21</td>
+                            </tr>
+                            <tr class="border-b border-gray-200 hover:bg-gray-50">
+                                <td class="py-3 px-4">2.° A</td><td>-</td><td>-</td><td>19</td><td>19</td>
+                            </tr>
+                            <tr class="border-b border-gray-200 hover:bg-gray-50">
+                                <td class="py-3 px-4">3.º A</td><td>-</td><td>-</td><td>20</td><td>20</td>
+                            </tr>
+                            <tr class="border-b border-gray-200 hover:bg-gray-50">
+                                <td class="py-3 px-4">4.° A</td><td>6</td><td>1</td><td>8</td><td>15</td>
+                            </tr>
+                            <tr class="border-b border-gray-200 hover:bg-gray-50">
+                                <td class="py-3 px-4">5.° A</td><td>1</td><td>1</td><td>16</td><td>18</td>
+                            </tr>
+                            <tr class="border-b border-gray-200 hover:bg-gray-50">
+                                <td class="py-3 px-4">6.° A</td><td>-</td><td>-</td><td>20</td><td>20</td>
+                            </tr>
+                            <tr class="border-b border-gray-200 hover:bg-gray-50">
+                                <td class="py-3 px-4">7.° A</td><td>-</td><td>-</td><td>26</td><td>26</td>
+                            </tr>
+                            <tr class="border-b border-gray-200 hover:bg-gray-50">
+                                <td class="py-3 px-4">8.° A</td><td>-</td><td>-</td><td>13</td><td>13</td>
+                            </tr>
+                            <tr class="bg-gray-100 font-semibold">
+                                <td class="py-3 px-4 rounded-bl-lg">Total</td><td>7</td><td>2</td><td>143</td><td>152</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p class="text-gray-600 mt-4">Los niveles 7.0, 6.º y 1.º concentran la mayor carga de riesgo (67 estudiantes, 44% del total).</p>
+            </div>
+
+            <div class="card mb-8">
+                <h4 class="text-xl font-medium text-gray-700 mb-3">Casos Extremadamente Críticos (Asistencia ≤ 50%)</h4>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full bg-white rounded-lg shadow-sm">
+                        <thead>
+                            <tr class="bg-red-500 text-white">
+                                <th class="py-3 px-4 text-left rounded-tl-lg">Curso</th>
+                                <th class="py-3 px-4 text-left">Estudiante</th>
+                                <th class="py-3 px-4 text-left">Asist.</th>
+                                <th class="py-3 px-4 text-left">Prom.</th>
+                                <th class="py-3 px-4 text-left rounded-tr-lg">Criterio</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-b border-gray-200 hover:bg-gray-50"><td>8.° A</td><td>Ramos González, Deans Evens E.</td><td>6%</td><td>5.0</td><td>4</td></tr>
+                            <tr class="border-b border-gray-200 hover:bg-gray-50"><td>7.° A</td><td>Camus Poblete, Diddier N.F.</td><td>24%</td><td>6.0</td><td>4</td></tr>
+                            <tr class="border-b border-gray-200 hover:bg-gray-50"><td>6.° A</td><td>Vargas Alarcón, Aníbal</td><td>37%</td><td>5.7</td><td>4</td></tr>
+                            <tr class="border-b border-gray-200 hover:bg-gray-50"><td>2.° A</td><td>Soto Vergara, Mayckol</td><td>43%</td><td>5.8</td><td>4</td></tr>
+                            <tr class="border-b border-gray-200 hover:bg-gray-50"><td>7.º A</td><td>Rodríguez Meléndez, Madelinne</td><td>48%</td><td>5.4</td><td>4</td></tr>
+                            <tr class="border-b border-gray-200 hover:bg-gray-50"><td>3.º A</td><td>Soria Tobar, Mia</td><td>49%</td><td>6.0</td><td>4</td></tr>
+                            <tr class="border-b border-gray-200 hover:bg-gray-50"><td>1.º A</td><td>Aguilar Gavidia, Miranda</td><td>50%</td><td>6.8</td><td>4</td></tr>
+                            <tr class="border-b border-gray-200 hover:bg-gray-50"><td>1.º A</td><td>Painén Rendiles, Mia</td><td>50%</td><td>6.2</td><td>4</td></tr>
+                            <tr class="border-b border-gray-200 hover:bg-gray-50"><td>3.º A</td><td>Aguilar Gavidia, Anastasia</td><td>50%</td><td>6.1</td><td>4</td></tr>
+                            <tr class="border-b border-gray-200 hover:bg-gray-50"><td>3.º A</td><td>Torres Alarcón, Amelia</td><td>50%</td><td>5.9</td><td>4</td></tr>
+                            <tr class="border-b border-gray-200 hover:bg-gray-50"><td>5.° A</td><td>Pais Campos, Isaías</td><td>50%</td><td>5.2</td><td>4</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p class="text-gray-600 mt-4">Estos 11 casos requieren intervención familiar y psicosocial inmediata.</p>
+            </div>
+
+            <div class="card">
+                <h4 class="text-xl font-medium text-gray-700 mb-3">Plan de Acciones Remediales</h4>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full bg-white rounded-lg shadow-sm">
+                        <thead>
+                            <tr class="bg-green-500 text-white">
+                                <th class="py-3 px-4 text-left rounded-tl-lg">Fase</th>
+                                <th class="py-3 px-4 text-left">Acción clave</th>
+                                <th class="py-3 px-4 text-left">Responsable</th>
+                                <th class="py-3 px-4 text-left rounded-tr-lg">Fecha límite</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-b border-gray-200 hover:bg-gray-50">
+                                <td class="py-3 px-4">Inmediata (agosto)</td>
+                                <td class="py-3 px-4">Reunión de análisis por curso con jefaturas y Dirección. Registro en matriz de riesgo (Google Sheets) actualizada mensualmente.</td>
+                                <td class="py-3 px-4">Equipo Gestión Pedagógica, UTP</td>
+                                <td class="py-3 px-4">08-ago</td>
+                            </tr>
+                            <tr class="border-b border-gray-200 hover:bg-gray-50">
+                                <td class="py-3 px-4">Corto plazo (agosto-septiembre)</td>
+                                <td class="py-3 px-4">Citación y firma de Compromiso de Asistencia para los 143 casos. Diseño de Planes de apoyo al Aprendizaje para 7 estudiantes C1.</td>
+                                <td class="py-3 px-4">Inspectoría, Equipos de Aula</td>
+                                <td class="py-3 px-4">29-ago</td>
+                            </tr>
+                            <tr class="border-b border-gray-200 hover:bg-gray-50">
+                                <td class="py-3 px-4">Mediano plazo (septiembre-octubre)</td>
+                                <td class="py-3 px-4">Evaluación de planes de apoyo para estudiantes C1. Monitoreo quincenal asistencia + Visitas domiciliarias < 80%.</td>
+                                <td class="py-3 px-4">Equipo de Gestión Pedagógica, Trabajadora Social e Inspectoría General</td>
+                                <td class="py-3 px-4">03-oct</td>
+                            </tr>
+                            <tr class="border-b border-gray-200 hover:bg-gray-50">
+                                <td class="py-3 px-4">Largo plazo (noviembre-diciembre)</td>
+                                <td class="py-3 px-4">Comité de Promoción extraordinario: análisis caso a caso, actas y fundamentaciones.</td>
+                                <td class="py-3 px-4">Equipo de Gestión</td>
+                                <td class="py-3 px-4">15-dic</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p class="text-gray-600 mt-4">El riesgo de repitencia está altamente concentrado en la inasistencia (criterio 4). Si se implementa el plan propuesto, la escuela puede reducir la repitencia a niveles mínimos.</p>
+            </div>
+        </div>
+
+        <!-- Tab Content: Leccionarios sin Firmar -->
+        <div id="lessonPlans" class="tab-content">
+            <h3 class="text-2xl font-semibold text-gray-700 mb-6">Leccionarios sin Firmar</h3>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div class="card">
+                    <h4 class="text-xl font-medium text-gray-700 mb-3">Docentes con Mayor Número de Leccionarios sin Firmar</h4>
+                    <ul class="list-disc list-inside text-gray-600 space-y-2">
+                        <li><span class="font-semibold">Sujey Inzunza López:</span> 174 leccionarios</li>
+                        <li><span class="font-semibold">Paulette Reveco Poblete:</span> 140 leccionarios</li>
+                        <li><span class="font-semibold">Catalina Campillay Del Canto:</span> 113 leccionarios</li>
+                        <li><span class="font-semibold">Daniel Loyola Fraile:</span> 78 leccionarios</li>
+                        <li><span class="font-semibold">Paula Briceño Saint-jean:</span> 46 leccionarios</li>
+                    </ul>
+                    <p class="text-gray-600 mt-4">Los cinco docentes listados concentran aproximadamente el 63.6% del total de leccionarios pendientes.</p>
+                </div>
+                <div class="card">
+                    <h4 class="text-xl font-medium text-gray-700 mb-3">Acciones Reparatorias Inmediatas</h4>
+                    <ul class="list-disc list-inside text-gray-600 space-y-2">
+                        <li><span class="font-semibold">Contacto directo y acompañamiento:</span> Reuniones individuales con los cinco docentes prioritarios.</li>
+                        <li><span class="font-semibold">Capacitación y recordatorios:</span> Reforzar procedimientos de registro y firma mediante capacitaciones breves y recordatorios semanales.</li>
+                        <li><span class="font-semibold">Monitoreo periódico:</span> Seguimiento quincenal de la firma de leccionarios con reportes automáticos.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card">
+                <h4 class="text-xl font-medium text-gray-700 mb-3">Tabla Consolidada de Docentes con Leccionarios Pendientes</h4>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full bg-white rounded-lg shadow-sm">
+                        <thead>
+                            <tr class="bg-blue-500 text-white">
+                                <th class="py-3 px-4 text-left rounded-tl-lg">Docente</th>
+                                <th class="py-3 px-4 text-left rounded-tr-lg">Leccionarios sin firmar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-b border-gray-200 hover:bg-gray-50"><td>Sujey Inzunza López</td><td>174</td></tr>
+                            <tr class="border-b border-gray-200 hover:bg-gray-50"><td>Paulette Reveco Poblete</td><td>140</td></tr>
+                            <tr class="border-b border-gray-200 hover:bg-gray-50"><td>Catalina Campillay Del Canto</td><td>113</td></tr>
+                            <tr class="border-b border-gray-200 hover:bg-gray-50"><td>Daniel Loyola Fraile</td><td>78</td></tr>
+                            <tr class="border-b border-gray-200 hover:bg-gray-50"><td>Paula Briceño Saint-jean</td><td>46</td></tr>
+                            <tr class="border-b border-gray-200 hover:bg-gray-50"><td>Alfredo Pavez Vásquez</td><td>40</td></tr>
+                            <tr class="border-b border-gray-200 hover:bg-gray-50"><td>Marjorie Huaiqui Hernández</td><td>38</td></tr>
+                            <tr class="border-b border-gray-200 hover:bg-gray-50"><td>Francisco Segovia Mella</td><td>32</td></tr>
+                            <tr class="border-b border-gray-200 hover:bg-gray-50"><td>Leticia González Quezada</td><td>32</td></tr>
+                            <tr class="border-b border-gray-200 hover:bg-gray-50"><td>Catherina Jara Muñoz</td><td>22</td></tr>
+                            <tr class="border-b border-gray-200 hover:bg-gray-50"><td>Diego Burgos Godoy</td><td>14</td></tr>
+                            <tr class="border-b border-gray-200 hover:bg-gray-50"><td>Felipe Millanao Avendaño</td><td>14</td></tr>
+                            <tr class="border-b border-gray-200 hover:bg-gray-50"><td>Ignacia Saavedra Alarcón</td><td>14</td></tr>
+                            <tr class="border-b border-gray-200 hover:bg-gray-50"><td>Beatriz Bascur Andrade</td><td>11</td></tr>
+                            <tr class="border-b border-gray-200 hover:bg-gray-50"><td>Ignacio Correa Miranda</td><td>6</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab Content: Desarrollo de la Lectura -->
+        <div id="readingDevelopment" class="tab-content">
+            <h3 class="text-2xl font-semibold text-gray-700 mb-6">Desarrollo de la Lectura</h3>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div class="card">
+                    <h4 class="text-xl font-medium text-gray-700 mb-3">Resumen de Lectores y No Lectores</h4>
+                    <p class="text-gray-600 mb-2"><span class="font-semibold">Total estudiantes (1° a 8° básico):</span> 294</p>
+                    <p class="text-gray-600 mb-2"><span class="font-semibold">Estudiantes lectores:</span> 264 (90%)</p>
+                    <p class="text-gray-600 mb-2"><span class="font-semibold">Estudiantes no lectores:</span> 30 (10%)</p>
+                </div>
+                <div class="card">
+                    <h4 class="text-xl font-medium text-gray-700 mb-3">Porcentaje de Estudiantes Lectores y No Lectores</h4>
+                    <div class="chart-container">
+                        <canvas id="readingPieChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h4 class="text-xl font-medium text-gray-700 mb-3">Estudiantes Lectores por Curso</h4>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full bg-white rounded-lg shadow-sm">
+                        <thead>
+                            <tr class="bg-blue-500 text-white">
+                                <th class="py-3 px-4 text-left rounded-tl-lg">Curso</th>
+                                <th class="py-3 px-4 text-left rounded-tr-lg">Estudiantes Lectores</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-b border-gray-200 hover:bg-gray-50"><td>Kinder</td><td>3 (no considerados en el %)</td></tr>
+                            <tr class="border-b border-gray-200 hover:bg-gray-50"><td>1º Básico</td><td>20</td></tr>
+                            <tr class="border-b border-gray-200 hover:bg-gray-50"><td>2º Básico</td><td>29</td></tr>
+                            <tr class="border-b border-gray-200 hover:bg-gray-50"><td>3º Básico</td><td>38</td></tr>
+                            <tr class="border-b border-gray-200 hover:bg-gray-50"><td>4º Básico</td><td>137</td></tr>
+                            <tr class="border-b border-gray-200 hover:bg-gray-50"><td>5° Básico</td><td>37</td></tr>
+                            <tr class="border-b border-gray-200 hover:bg-gray-50"><td>6º Básico</td><td>38</td></tr>
+                            <tr class="border-b border-gray-200 hover:bg-gray-50"><td>7° Básico</td><td>37</td></tr>
+                            <tr class="border-b border-gray-200 hover:bg-gray-50"><td>8° Básico</td><td>28</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p class="text-gray-600 mt-4">(Considerando que de 1º a 7º básico hay 38 estudiantes por curso y 28 en 8º básico)</p>
+            </div>
+        </div>
+
+        <!-- Tab Content: Cantidad de reuniones de equipos de aula a la fecha -->
+        <div id="teamMeetings" class="tab-content">
+            <h3 class="text-2xl font-semibold text-gray-700 mb-6">Cantidad de Reuniones de Equipos de Aula a la Fecha</h3>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                <div class="card">
+                    <h4 class="text-xl font-medium text-gray-700 mb-3">Total Coordinaciones</h4>
+                    <p class="text-gray-600 mb-2"><span class="font-semibold">Total:</span> 173</p>
+                    <ul class="list-disc list-inside text-gray-600 space-y-2">
+                        <li><span class="font-semibold">Lenguaje:</span> 50</li>
+                        <li><span class="font-semibold">Matemáticas:</span> 55</li>
+                        <li><span class="font-semibold">Historia:</span> 30</li>
+                        <li><span class="font-semibold">Ciencias:</span> 18</li>
+                        <li><span class="font-semibold">Educación Física:</span> 20</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h4 class="text-xl font-medium text-gray-700 mb-3">Total Coordinaciones I Ciclo</h4>
+                    <p class="text-gray-600 mb-2"><span class="font-semibold">Total:</span> 87</p>
+                    <ul class="list-disc list-inside text-gray-600 space-y-2">
+                        <li><span class="font-semibold">Lenguaje:</span> 30</li>
+                        <li><span class="font-semibold">Matemáticas:</span> 32</li>
+                        <li><span class="font-semibold">Historia:</span> 8</li>
+                        <li><span class="font-semibold">Ciencias:</span> 7</li>
+                        <li><span class="font-semibold">Educación Física:</span> 10</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h4 class="text-xl font-medium text-gray-700 mb-3">Total Coordinaciones II Ciclo</h4>
+                    <p class="text-gray-600 mb-2"><span class="font-semibold">Total:</span> 86</p>
+                    <ul class="list-disc list-inside text-gray-600 space-y-2">
+                        <li><span class="font-semibold">Lenguaje:</span> 20</li>
+                        <li><span class="font-semibold">Matemáticas:</span> 23</li>
+                        <li><span class="font-semibold">Historia:</span> 23</li>
+                        <li><span class="font-semibold">Ciencias:</span> 10</li>
+                        <li><span class="font-semibold">Educación Física:</span> 10</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="card">
+                <h4 class="text-xl font-medium text-gray-700 mb-3">Coordinaciones por Área y Ciclo</h4>
+                <div class="chart-container">
+                    <canvas id="coordinationChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab Content: Estadísticas Individuales -->
+        <div id="individualStats" class="tab-content">
+            <h3 class="text-2xl font-semibold text-gray-700 mb-6">Estadísticas Individuales</h3>
+
+            <div class="mb-6">
+                <label for="personSearch" class="block text-gray-700 text-lg font-medium mb-2">Buscar Persona (Estudiante/Docente):</label>
+                <input type="text" id="personSearch" class="w-full md:w-1/2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Ej: Ramos González, Deans Evens E. o Sujey Inzunza López">
+                <button onclick="displayPersonStats()" class="mt-4 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition duration-300">Buscar</button>
+            </div>
+
+            <div id="personCardContainer" class="hidden card p-6 mt-8">
+                <h4 class="text-2xl font-bold text-gray-800 mb-4" id="personName"></h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div id="personDetails" class="text-gray-700">
+                        <!-- Details will be populated here -->
+                    </div>
+                    <div id="personChartContainer" class="chart-container">
+                        <canvas id="personStatsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div id="noPersonFound" class="hidden text-red-600 mt-4 text-center">
+                No se encontró información para la persona ingresada. Por favor, verifique el nombre.
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Message Box HTML -->
+    <div id="messageBoxOverlay" class="message-box-overlay hidden">
+        <div class="message-box">
+            <p id="messageBoxText" class="text-lg font-medium"></p>
+            <button onclick="hideMessageBox()">Aceptar</button>
+        </div>
+    </div>
+
+    <script>
+        // Data from the document
+        const riskData = {
+            criterios: ['Criterio 1', 'Criterio 3', 'Criterio 4'],
+            valores: [7, 2, 143]
+        };
+
+        const readingData = {
+            labels: ['Lectores', 'No Lectores'],
+            data: [89.8, 10.2] // Adjusted to match the pie chart image (89.8% vs 10.2%)
+        };
+
+        const coordinationData = {
+            areas: ['Lenguaje', 'Matemáticas', 'Historia', 'Ciencias', 'Educación Física'],
+            total: [50, 55, 30, 18, 20],
+            cicloI: [30, 32, 8, 7, 10],
+            cicloII: [20, 23, 23, 10, 10]
+        };
+
+        const criticalCases = [
+            { curso: '8.° A', estudiante: 'Ramos González, Deans Evens E.', asist: '6%', prom: '5.0', criterio: '4' },
+            { curso: '7.° A', estudiante: 'Camus Poblete, Diddier N.F.', asist: '24%', prom: '6.0', criterio: '4' },
+            { curso: '6.° A', estudiante: 'Vargas Alarcón, Aníbal', asist: '37%', prom: '5.7', criterio: '4' },
+            { curso: '2.° A', estudiante: 'Soto Vergara, Mayckol', asist: '43%', prom: '5.8', criterio: '4' },
+            { curso: '7.º A', estudiante: 'Rodríguez Meléndez, Madelinne', asist: '48%', prom: '5.4', criterio: '4' },
+            { curso: '3.º A', estudiante: 'Soria Tobar, Mia', asist: '49%', prom: '6.0', criterio: '4' },
+            { curso: '1.º A', estudiante: 'Aguilar Gavidia, Miranda', asist: '50%', prom: '6.8', criterio: '4' },
+            { curso: '1.º A', estudiante: 'Painén Rendiles, Mia', asist: '50%', prom: '6.2', criterio: '4' },
+            { curso: '3.º A', estudiante: 'Aguilar Gavidia, Anastasia', asist: '50%', prom: '6.1', criterio: '4' },
+            { curso: '3.º A', estudiante: 'Torres Alarcón, Amelia', asist: '50%', prom: '5.9', criterio: '4' },
+            { curso: '5.° A', estudiante: 'Pais Campos, Isaías', asist: '50%', prom: '5.2', criterio: '4' }
+        ];
+
+        const pendingLessonPlans = [
+            { docente: 'Sujey Inzunza López', leccionarios: 174 },
+            { docente: 'Paulette Reveco Poblete', leccionarios: 140 },
+            { docente: 'Catalina Campillay Del Canto', leccionarios: 113 },
+            { docente: 'Daniel Loyola Fraile', leccionarios: 78 },
+            { docente: 'Paula Briceño Saint-jean', leccionarios: 46 },
+            { docente: 'Alfredo Pavez Vásquez', leccionarios: 40 },
+            { docente: 'Marjorie Huaiqui Hernández', leccionarios: 38 },
+            { docente: 'Francisco Segovia Mella', leccionarios: 32 },
+            { docente: 'Leticia González Quezada', leccionarios: 32 },
+            { docente: 'Catherina Jara Muñoz', leccionarios: 22 },
+            { docente: 'Diego Burgos Godoy', leccionarios: 14 },
+            { docente: 'Felipe Millanao Avendaño', leccionarios: 14 },
+            { docente: 'Ignacia Saavedra Alarcón', leccionarios: 14 },
+            { docente: 'Beatriz Bascur Andrade', leccionarios: 11 },
+            { docente: 'Ignacio Correa Miranda', leccionarios: 6 }
+        ];
+
+        // Function to show custom message box
+        function showMessageBox(message) {
+            document.getElementById('messageBoxText').innerText = message;
+            document.getElementById('messageBoxOverlay').classList.remove('hidden');
+        }
+
+        // Function to hide custom message box
+        function hideMessageBox() {
+            document.getElementById('messageBoxOverlay').classList.add('hidden');
+        }
+
+        // Function to open tabs
+        function openTab(tabId) {
+            // Get all tab content elements
+            const tabContents = document.querySelectorAll('.tab-content');
+            // Hide all tab content
+            tabContents.forEach(content => content.classList.remove('active'));
+
+            // Get all tab buttons
+            const tabButtons = document.querySelectorAll('.tab-button');
+            // Deactivate all tab buttons
+            tabButtons.forEach(button => button.classList.remove('active'));
+
+            // Show the selected tab content
+            document.getElementById(tabId).classList.add('active');
+            // Activate the clicked tab button
+            event.currentTarget.classList.add('active');
+
+            // Re-render charts when their tab becomes active
+            if (tabId === 'riskStudents') {
+                renderRiskCriteriaChart();
+            } else if (tabId === 'readingDevelopment') {
+                renderReadingPieChart();
+            } else if (tabId === 'teamMeetings') {
+                renderCoordinationChart();
+            }
+        }
+
+        // Chart for Estudiantes en Riesgo de Repitencia (Bar Chart)
+        let riskCriteriaChart;
+        function renderRiskCriteriaChart() {
+            const ctx = document.getElementById('riskCriteriaChart').getContext('2d');
+            if (riskCriteriaChart) {
+                riskCriteriaChart.destroy(); // Destroy previous chart instance
+            }
+            riskCriteriaChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: riskData.criterios,
+                    datasets: [{
+                        label: 'Número de Estudiantes',
+                        data: riskData.valores,
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.7)',
+                            'rgba(54, 162, 235, 0.7)',
+                            'rgba(255, 206, 86, 0.7)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)'
+                        ],
+                        borderWidth: 1,
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Estudiantes en Riesgo por Criterio',
+                            font: { size: 18, weight: 'bold' },
+                            color: '#334155'
+                        },
+                        legend: {
+                            display: false
+                        },
+                        datalabels: {
+                            color: '#fff',
+                            formatter: (value) => value,
+                            font: {
+                                weight: 'bold'
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Número de Estudiantes',
+                                color: '#475569'
+                            },
+                            ticks: {
+                                color: '#64748b'
+                            },
+                            grid: {
+                                color: '#e2e8f0'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Criterio de Riesgo',
+                                color: '#475569'
+                            },
+                            ticks: {
+                                color: '#64748b'
+                            },
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                },
+                plugins: [ChartDataLabels]
+            });
+        }
+
+        // Chart for Desarrollo de la Lectura (Pie Chart)
+        let readingPieChart;
+        function renderReadingPieChart() {
+            const ctx = document.getElementById('readingPieChart').getContext('2d');
+            if (readingPieChart) {
+                readingPieChart.destroy(); // Destroy previous chart instance
+            }
+            readingPieChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: readingData.labels,
+                    datasets: [{
+                        data: readingData.data,
+                        backgroundColor: [
+                            'rgba(255, 159, 64, 0.8)', // Orange for Lectores
+                            'rgba(255, 99, 132, 0.8)'  // Red for No Lectores
+                        ],
+                        borderColor: [
+                            'rgba(255, 159, 64, 1)',
+                            'rgba(255, 99, 132, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Porcentaje de Estudiantes Lectores y No Lectores (Total: 294)',
+                            font: { size: 18, weight: 'bold' },
+                            color: '#334155'
+                        },
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#475569'
+                            }
+                        },
+                        datalabels: {
+                            color: '#fff',
+                            formatter: (value, context) => {
+                                return value + '%';
+                            },
+                            font: {
+                                weight: 'bold'
+                            }
+                        }
+                    }
+                },
+                plugins: [ChartDataLabels]
+            });
+        }
+
+        // Chart for Reuniones de Equipo de Aula (Bar Chart)
+        let coordinationChart;
+        function renderCoordinationChart() {
+            const ctx = document.getElementById('coordinationChart').getContext('2d');
+            if (coordinationChart) {
+                coordinationChart.destroy(); // Destroy previous chart instance
+            }
+            coordinationChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: coordinationData.areas,
+                    datasets: [
+                        {
+                            label: 'Total Coordinaciones',
+                            data: coordinationData.total,
+                            backgroundColor: 'rgba(75, 192, 192, 0.7)',
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderWidth: 1,
+                            borderRadius: 8
+                        },
+                        {
+                            label: 'Coordinaciones I Ciclo',
+                            data: coordinationData.cicloI,
+                            backgroundColor: 'rgba(153, 102, 255, 0.7)',
+                            borderColor: 'rgba(153, 102, 255, 1)',
+                            borderWidth: 1,
+                            borderRadius: 8
+                        },
+                        {
+                            label: 'Coordinaciones II Ciclo',
+                            data: coordinationData.cicloII,
+                            backgroundColor: 'rgba(255, 159, 64, 0.7)',
+                            borderColor: 'rgba(255, 159, 64, 1)',
+                            borderWidth: 1,
+                            borderRadius: 8
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Cantidad de Reuniones de Equipo de Aula por Área y Ciclo',
+                            font: { size: 18, weight: 'bold' },
+                            color: '#334155'
+                        },
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                color: '#475569'
+                            }
+                        },
+                        datalabels: {
+                            color: '#333',
+                            anchor: 'end',
+                            align: 'top',
+                            formatter: (value) => value,
+                            font: {
+                                weight: 'bold'
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Número de Reuniones',
+                                color: '#475569'
+                            },
+                            ticks: {
+                                color: '#64748b'
+                            },
+                            grid: {
+                                color: '#e2e8f0'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Área',
+                                color: '#475569'
+                            },
+                            ticks: {
+                                color: '#64748b'
+                            },
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                },
+                plugins: [ChartDataLabels]
+            });
+        }
+
+        // Function to display individual person statistics
+        let personStatsChart;
+        function displayPersonStats() {
+            const searchInput = document.getElementById('personSearch').value.trim();
+            const personCardContainer = document.getElementById('personCardContainer');
+            const personNameElement = document.getElementById('personName');
+            const personDetailsElement = document.getElementById('personDetails');
+            const noPersonFoundElement = document.getElementById('noPersonFound');
+
+            personCardContainer.classList.add('hidden');
+            noPersonFoundElement.classList.add('hidden');
+            personDetailsElement.innerHTML = ''; // Clear previous details
+
+            // Search in critical cases (students)
+            const foundStudent = criticalCases.find(student => student.estudiante.toLowerCase() === searchInput.toLowerCase());
+            if (foundStudent) {
+                personNameElement.innerText = foundStudent.estudiante;
+                personDetailsElement.innerHTML = `
+                    <p><span class="font-semibold">Tipo:</span> Estudiante</p>
+                    <p><span class="font-semibold">Curso:</span> ${foundStudent.curso}</p>
+                    <p><span class="font-semibold">Asistencia:</span> ${foundStudent.asist}</p>
+                    <p><span class="font-semibold">Promedio:</span> ${foundStudent.prom}</p>
+                    <p><span class="font-semibold">Criterio de Riesgo:</span> ${foundStudent.criterio}</p>
+                `;
+                personCardContainer.classList.remove('hidden');
+                renderPersonChart('student', foundStudent);
+                return;
+            }
+
+            // Search in pending lesson plans (teachers)
+            const foundTeacher = pendingLessonPlans.find(teacher => teacher.docente.toLowerCase() === searchInput.toLowerCase());
+            if (foundTeacher) {
+                personNameElement.innerText = foundTeacher.docente;
+                personDetailsElement.innerHTML = `
+                    <p><span class="font-semibold">Tipo:</span> Docente</p>
+                    <p><span class="font-semibold">Leccionarios sin firmar:</span> ${foundTeacher.leccionarios}</p>
+                `;
+                personCardContainer.classList.remove('hidden');
+                renderPersonChart('teacher', foundTeacher);
+                return;
+            }
+
+            // If no person found
+            noPersonFoundElement.classList.remove('hidden');
+            showMessageBox('No se encontró información para la persona ingresada. Por favor, verifique el nombre.');
+        }
+
+        function renderPersonChart(type, data) {
+            const ctx = document.getElementById('personStatsChart').getContext('2d');
+            if (personStatsChart) {
+                personStatsChart.destroy();
+            }
+
+            if (type === 'student') {
+                personStatsChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Asistencia (%)', 'Promedio'],
+                        datasets: [{
+                            label: 'Estadísticas del Estudiante',
+                            data: [parseFloat(data.asist), parseFloat(data.prom)],
+                            backgroundColor: [
+                                'rgba(54, 162, 235, 0.7)',
+                                'rgba(75, 192, 192, 0.7)'
+                            ],
+                            borderColor: [
+                                'rgba(54, 162, 235, 1)',
+                                'rgba(75, 192, 192, 1)'
+                            ],
+                            borderWidth: 1,
+                            borderRadius: 8
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Estadísticas de Asistencia y Promedio',
+                                font: { size: 16, weight: 'bold' },
+                                color: '#334155'
+                            },
+                            legend: {
+                                display: false
+                            },
+                            datalabels: {
+                                color: '#fff',
+                                formatter: (value) => value,
+                                font: {
+                                    weight: 'bold'
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 100, // Max for percentage
+                                title: {
+                                    display: true,
+                                    text: 'Valor',
+                                    color: '#475569'
+                                },
+                                ticks: {
+                                    color: '#64748b'
+                                },
+                                grid: {
+                                    color: '#e2e8f0'
+                                }
+                            },
+                            x: {
+                                ticks: {
+                                    color: '#64748b'
+                                },
+                                grid: {
+                                    display: false
+                                }
+                            }
+                        }
+                    },
+                    plugins: [ChartDataLabels]
+                });
+            } else if (type === 'teacher') {
+                personStatsChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Leccionarios sin firmar'],
+                        datasets: [{
+                            label: 'Leccionarios Pendientes',
+                            data: [data.leccionarios],
+                            backgroundColor: 'rgba(255, 99, 132, 0.7)',
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            borderWidth: 1,
+                            borderRadius: 8
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Leccionarios Pendientes del Docente',
+                                font: { size: 16, weight: 'bold' },
+                                color: '#334155'
+                            },
+                            legend: {
+                                display: false
+                            },
+                            datalabels: {
+                                color: '#fff',
+                                formatter: (value) => value,
+                                font: {
+                                    weight: 'bold'
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Cantidad',
+                                    color: '#475569'
+                                },
+                                ticks: {
+                                    color: '#64748b'
+                                },
+                                grid: {
+                                    color: '#e2e8f0'
+                                }
+                            },
+                            x: {
+                                ticks: {
+                                    color: '#64748b'
+                                },
+                                grid: {
+                                    display: false
+                                }
+                            }
+                        }
+                    },
+                    plugins: [ChartDataLabels]
+                });
+            }
+        }
+
+        // Initial rendering of charts when the page loads
+        window.onload = function() {
+            renderRiskCriteriaChart();
+            renderReadingPieChart();
+            renderCoordinationChart();
+        };
+    </script>
+</body>
+</html>
