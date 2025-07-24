@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -83,6 +83,29 @@
         .message-box button:hover {
             background-color: #2563eb;
         }
+        /* Sub-tab styles */
+        .sub-tab-button {
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            font-weight: 500;
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
+            background-color: #f1f5f9;
+            color: #64748b;
+            border: 1px solid #cbd5e1;
+        }
+        .sub-tab-button.active {
+            background-color: #60a5fa;
+            color: white;
+            box-shadow: 0 2px 8px 0 rgba(96, 165, 250, 0.3);
+        }
+        .sub-tab-content {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        .sub-tab-content.active {
+            display: block;
+        }
     </style>
 </head>
 <body class="p-6 md:p-10">
@@ -100,6 +123,7 @@
             <button class="tab-button" onclick="openTab('readingDevelopment')">Desarrollo de la Lectura</button>
             <button class="tab-button" onclick="openTab('teamMeetings')">Reuniones de Equipo de Aula</button>
             <button class="tab-button" onclick="openTab('individualStats')">Estadísticas Individuales</button>
+            <button class="tab-button" onclick="openTab('academicDatabase')">Base de Datos</button>
         </nav>
 
         <!-- Tab Content: Estudiantes en Riesgo de Repitencia -->
@@ -332,7 +356,7 @@
                             <tr class="bg-blue-500 text-white">
                                 <th class="py-3 px-4 text-left rounded-tl-lg">Curso</th>
                                 <th class="py-3 px-4 text-left">Estudiantes Lectores</th>
-                                <th class="py-3 px-4 text-left rounded-tr-lg">Estudiantes No Lectores</th> <!-- New Column Header -->
+                                <th class="py-3 px-4 text-left rounded-tr-lg">Estudiantes No Lectores</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -340,7 +364,7 @@
                             <tr class="border-b border-gray-200 hover:bg-gray-50"><td>1º Básico</td><td>20</td><td>18</td></tr>
                             <tr class="border-b border-gray-200 hover:bg-gray-50"><td>2º Básico</td><td>29</td><td>9</td></tr>
                             <tr class="border-b border-gray-200 hover:bg-gray-50"><td>3º Básico</td><td>38</td><td>0</td></tr>
-                            <tr class="border-b border-gray-200 hover:bg-gray-50"><td>4º Básico</td><td>38</td><td>0</td></tr> <!-- Corrected value and added non-readers -->
+                            <tr class="border-b border-gray-200 hover:bg-gray-50"><td>4º Básico</td><td>38</td><td>0</td></tr>
                             <tr class="border-b border-gray-200 hover:bg-gray-50"><td>5° Básico</td><td>37</td><td>1</td></tr>
                             <tr class="border-b border-gray-200 hover:bg-gray-50"><td>6º Básico</td><td>38</td><td>0</td></tr>
                             <tr class="border-b border-gray-200 hover:bg-gray-50"><td>7° Básico</td><td>37</td><td>1</td></tr>
@@ -424,6 +448,124 @@
                 No se encontró información para la persona ingresada. Por favor, verifique el nombre.
             </div>
         </div>
+
+        <!-- Tab Content: Base de Datos -->
+        <div id="academicDatabase" class="tab-content">
+            <h3 class="text-2xl font-semibold text-gray-700 mb-6">Base de Datos</h3>
+
+            <!-- Sub-tab Navigation for Base de Datos -->
+            <nav class="flex flex-wrap justify-center gap-2 mb-6">
+                <button id="btnSubTabLessonPlans" class="sub-tab-button active" onclick="openSubTab('subTabLessonPlans', event)">Leccionarios Pendientes</button>
+                <button id="btnSubTabCriterio1" class="sub-tab-button" onclick="openSubTab('subTabCriterio1', event)">Repitencia MINEDUC Criterio N°1</button>
+                <button id="btnSubTabCriterio3" class="sub-tab-button" onclick="openSubTab('subTabCriterio3', event)">Repitencia MINEDUC Criterio N°3</button>
+                <button id="btnSubTabCriterio4" class="sub-tab-button" onclick="openSubTab('subTabCriterio4', event)">Repitencia MINEDUC Criterio N°4</button>
+            </nav>
+
+            <!-- Sub-tab Content: Leccionarios Pendientes -->
+            <div id="subTabLessonPlans" class="sub-tab-content active card mb-8">
+                <h4 class="text-xl font-medium text-gray-700 mb-3">Horas de Clase sin Leccionario Registrado</h4>
+                <div class="overflow-x-auto">
+                    <table id="lessonPlanTable" class="min-w-full bg-white rounded-lg shadow-sm">
+                        <thead>
+                            <tr class="bg-blue-500 text-white">
+                                <th class="py-3 px-4 text-left">Docente</th>
+                                <th class="py-3 px-4 text-left">RUN</th>
+                                <th class="py-3 px-4 text-left">Curso</th>
+                                <th class="py-3 px-4 text-left">Asignatura</th>
+                                <th class="py-3 px-4 text-left">Fecha</th>
+                                <th class="py-3 px-4 text-left">Hora de clase</th>
+                                <th class="py-3 px-4 text-left">Leccionario registrado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Data will be populated here by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Sub-tab Content: Repitencia MINEDUC Criterio N°1 -->
+            <div id="subTabCriterio1" class="sub-tab-content card mb-8">
+                <h4 class="text-xl font-medium text-gray-700 mb-3">Estudiantes en Peligro de Repitencia - Criterio N°1</h4>
+                <div class="overflow-x-auto">
+                    <table id="criterio1Table" class="min-w-full bg-white rounded-lg shadow-sm">
+                        <thead>
+                            <tr class="bg-blue-500 text-white">
+                                <th class="py-3 px-4 text-left">Curso</th>
+                                <th class="py-3 px-4 text-left">Nº</th>
+                                <th class="py-3 px-4 text-left">Estudiante</th>
+                                <th class="py-3 px-4 text-left">RUT</th>
+                                <th class="py-3 px-4 text-left">Criterio MINEDUC</th>
+                                <th class="py-3 px-4 text-left">Porcentaje asistencia anual</th>
+                                <th class="py-3 px-4 text-left">Promedio general</th>
+                                <th class="py-3 px-4 text-left">Promedios de asignatura bajo 4</th>
+                                <th class="py-3 px-4 text-left">Calificaciones faltantes</th>
+                                <th class="py-3 px-4 text-left">Asignaturas sin calificaciones</th>
+                                <th class="py-3 px-4 text-left">Matrícula</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Data will be populated here by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Sub-tab Content: Repitencia MINEDUC Criterio N°3 -->
+            <div id="subTabCriterio3" class="sub-tab-content card mb-8">
+                <h4 class="text-xl font-medium text-gray-700 mb-3">Estudiantes en Peligro de Repitencia - Criterio N°3</h4>
+                <div class="overflow-x-auto">
+                    <table id="criterio3Table" class="min-w-full bg-white rounded-lg shadow-sm">
+                        <thead>
+                            <tr class="bg-blue-500 text-white">
+                                <th class="py-3 px-4 text-left">Curso</th>
+                                <th class="py-3 px-4 text-left">Nº</th>
+                                <th class="py-3 px-4 text-left">Estudiante</th>
+                                <th class="py-3 px-4 text-left">RUT</th>
+                                <th class="py-3 px-4 text-left">Criterio MINEDUC</th>
+                                <th class="py-3 px-4 text-left">Porcentaje asistencia anual</th>
+                                <th class="py-3 px-4 text-left">Promedio general</th>
+                                <th class="py-3 px-4 text-left">Promedios de asignatura bajo 4</th>
+                                <th class="py-3 px-4 text-left">Calificaciones faltantes</th>
+                                <th class="py-3 px-4 text-left">Asignaturas sin calificaciones</th>
+                                <th class="py-3 px-4 text-left">Matrícula</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Data will be populated here by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Sub-tab Content: Repitencia MINEDUC Criterio N°4 -->
+            <div id="subTabCriterio4" class="sub-tab-content card mb-8">
+                <h4 class="text-xl font-medium text-gray-700 mb-3">Estudiantes en Peligro de Repitencia - Criterio N°4</h4>
+                <div class="overflow-x-auto">
+                    <table id="criterio4Table" class="min-w-full bg-white rounded-lg shadow-sm">
+                        <thead>
+                            <tr class="bg-blue-500 text-white">
+                                <th class="py-3 px-4 text-left">Curso</th>
+                                <th class="py-3 px-4 text-left">Nº</th>
+                                <th class="py-3 px-4 text-left">Estudiante</th>
+                                <th class="py-3 px-4 text-left">RUT</th>
+                                <th class="py-3 px-4 text-left">Criterio MINEDUC</th>
+                                <th class="py-3 px-4 text-left">Porcentaje asistencia anual</th>
+                                <th class="py-3 px-4 text-left">Promedio general</th>
+                                <th class="py-3 px-4 text-left">Promedios de asignatura bajo 4</th>
+                                <th class="py-3 px-4 text-left">Calificaciones faltantes</th>
+                                <th class="py-3 px-4 text-left">Asignaturas sin calificaciones</th>
+                                <th class="py-3 px-4 text-left">Matrícula</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Data will be populated here by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
     </div>
 
     <!-- Custom Message Box HTML -->
@@ -435,7 +577,7 @@
     </div>
 
     <script>
-        // Data from the document
+        // Data from the pedagogical management report
         const riskData = {
             criterios: ['Criterio 1', 'Criterio 3', 'Criterio 4'],
             valores: [7, 2, 143]
@@ -443,7 +585,7 @@
 
         const readingData = {
             labels: ['Lectores', 'No Lectores'],
-            data: [89.8, 10.2] // Adjusted to match the pie chart image (89.8% vs 10.2%)
+            data: [89.8, 10.2]
         };
 
         const coordinationData = {
@@ -453,6 +595,243 @@
             cicloII: [20, 23, 23, 10, 10]
         };
 
+        // Data for "Leccionarios Pendientes" sub-tab
+        const lessonPlanSubTabData = [
+            { docente: "Paula Briceño Saint-jean", run: "12.166.206-K", curso: "5° Básico A", asignatura: "Matemática", fecha: "31/03/2025", hora: "1", leccionarioRegistrado: "NO" },
+            { docente: "Paula Briceño Saint-jean", run: "12.166.206-K", curso: "5° Básico A", asignatura: "Matemática", fecha: "31/03/2025", hora: "2", leccionarioRegistrado: "NO" },
+            { docente: "Daniel Loyola Fraile", run: "17.141.212-9", curso: "5° Básico A", asignatura: "Ciencias Naturales", fecha: "31/03/2025", hora: "3", leccionarioRegistrado: "NO" },
+            { docente: "Daniel Loyola Fraile", run: "17.141.212-9", curso: "5° Básico A", asignatura: "Ciencias Naturales", fecha: "31/03/2025", hora: "4", leccionarioRegistrado: "NO" },
+            { docente: "Sujey Inzunza López", run: "16.088.531-9", curso: "Nivel de transición 1 A", asignatura: "Interacción Y Comprensión Del Entorno", fecha: "31/03/2025", hora: "7", leccionarioRegistrado: "NO" },
+            { docente: "Francisco Segovia Mella", run: "8.546.943-6", curso: "6° Básico A", asignatura: "Educación Física Y Salud", fecha: "31/03/2025", hora: "1", leccionarioRegistrado: "NO" },
+            { docente: "Francisco Segovia Mella", run: "8.546.943-6", curso: "6° Básico A", asignatura: "Educación Física Y Salud", fecha: "31/03/2025", hora: "2", leccionarioRegistrado: "NO" },
+            { docente: "Felipe Millanao Avendaño", run: "17.253.684-0", curso: "5° Básico A", asignatura: "Orientación", fecha: "28/03/2025", hora: "6", leccionarioRegistrado: "NO" },
+            { docente: "Sujey Inzunza López", run: "16.088.531-9", curso: "Nivel de transición 1 A", asignatura: "Desarrollo Personal Y Social", fecha: "28/03/2025", hora: "5", leccionarioRegistrado: "NO" },
+            { docente: "Sujey Inzunza López", run: "16.088.531-9", curso: "Nivel de transición 1 A", asignatura: "Desarrollo Personal Y Social", fecha: "28/03/2025", hora: "6", leccionarioRegistrado: "NO" },
+            { docente: "Paulette Reveco Poblete", run: "19.521.864-1", curso: "8° Básico A", asignatura: "Lengua Y Literatura", fecha: "28/03/2025", hora: "1", leccionarioRegistrado: "NO" },
+            { docente: "Paulette Reveco Poblete", run: "19.521.864-1", curso: "8° Básico A", asignatura: "Lengua Y Literatura", fecha: "28/03/2025", hora: "2", leccionarioRegistrado: "NO" },
+            { docente: "Paulette Reveco Poblete", run: "19.521.864-1", curso: "5° Básico A", asignatura: "Lenguaje Y Comunicación", fecha: "27/03/2025", hora: "5", leccionarioRegistrado: "NO" },
+            { docente: "Paulette Reveco Poblete", run: "19.521.864-1", curso: "5° Básico A", asignatura: "Lenguaje Y Comunicación", fecha: "27/03/2025", hora: "6", leccionarioRegistrado: "NO" },
+            { docente: "Sujey Inzunza López", run: "16.088.531-9", curso: "Nivel de transición 1 A", asignatura: "Desarrollo Personal Y Social", fecha: "27/03/2025", hora: "5", leccionarioRegistrado: "NO" },
+            { docente: "Sujey Inzunza López", run: "16.088.531-9", curso: "Nivel de transición 1 A", asignatura: "Desarrollo Personal Y Social", fecha: "27/03/2025", hora: "6", leccionarioRegistrado: "NO" },
+            { docente: "Catalina Campillay Del Canto", run: "17.576.667-7", curso: "Nivel de transición 2 A", asignatura: "Comunicación Integral", fecha: "27/03/2025", hora: "2", leccionarioRegistrado: "NO" },
+            { docente: "Catalina Campillay Del Canto", run: "17.576.667-7", curso: "Nivel de transición 2 A", asignatura: "Comunicación Integral", fecha: "27/03/2025", hora: "7", leccionarioRegistrado: "NO" },
+            { docente: "Catalina Campillay Del Canto", run: "17.576.667-7", curso: "Nivel de transición 2 A", asignatura: "Comunicación Integral", fecha: "27/03/2025", hora: "8", leccionarioRegistrado: "NO" },
+            { docente: "Paulette Reveco Poblete", run: "19.521.864-1", curso: "7º Básico A", asignatura: "Lengua Y Literatura", fecha: "27/03/2025", hora: "1", leccionarioRegistrado: "NO" },
+            { docente: "Paulette Reveco Poblete", run: "19.521.864-1", curso: "7º Básico A", asignatura: "Lengua Y Literatura", fecha: "27/03/2025", hora: "2", leccionarioRegistrado: "NO" },
+            { docente: "Paulette Reveco Poblete", run: "19.521.864-1", curso: "6º Básico A", asignatura: "Lenguaje Y Comunicación", fecha: "27/03/2025", hora: "3", leccionarioRegistrado: "NO" },
+            { docente: "Paulette Reveco Poblete", run: "19.521.864-1", curso: "6º Básico A", asignatura: "Lenguaje Y Comunicación", fecha: "27/03/2025", hora: "4", leccionarioRegistrado: "NO" },
+            { docente: "Sujey Inzunza López", run: "16.088.531-9", curso: "Nivel de transición 1 A", asignatura: "Desarrollo Personal Y Social", fecha: "26/03/2025", hora: "5", leccionarioRegistrado: "NO" },
+            { docente: "Sujey Inzunza López", run: "16.088.531-9", curso: "Nivel de transición 1 A", asignatura: "Desarrollo Personal Y Social", fecha: "26/03/2025", hora: "6", leccionarioRegistrado: "NO" },
+            { docente: "Sujey Inzunza López", run: "16.088.531-9", curso: "Nivel de transición 1 A", asignatura: "Interacción Y Comprensión Del Entorno", fecha: "26/03/2025", hora: "7", leccionarioRegistrado: "NO" },
+            { docente: "Sujey Inzunza López", run: "16.088.531-9", curso: "Nivel de transición 1 A", asignatura: "Interacción Y Comprensión Del Entorno", fecha: "26/03/2025", hora: "8", leccionarioRegistrado: "NO" },
+            { docente: "Paulette Reveco Poblete", run: "19.521.864-1", curso: "8° Básico A", asignatura: "Lengua Y Literatura", fecha: "26/03/2025", hora: "1", leccionarioRegistrado: "NO" },
+            { docente: "Paulette Reveco Poblete", run: "19.521.864-1", curso: "8° Básico A", asignatura: "Lengua Y Literatura", fecha: "26/03/2025", hora: "2", leccionarioRegistrado: "NO" },
+            { docente: "Paulette Reveco Poblete", run: "19.521.864-1", curso: "7º Básico A", asignatura: "Lengua Y Literatura", fecha: "26/03/2025", hora: "5", leccionarioRegistrado: "NO" },
+            { docente: "Paulette Reveco Poblete", run: "19.521.864-1", curso: "6º Básico A", asignatura: "Lenguaje Y Comunicación", fecha: "26/03/2025", hora: "3", leccionarioRegistrado: "NO" },
+            { docente: "Paulette Reveco Poblete", run: "19.521.864-1", curso: "6° Básico A", asignatura: "Lenguaje Y Comunicación", fecha: "26/03/2025", hora: "4", leccionarioRegistrado: "NO" },
+            { docente: "Paulette Reveco Poblete", run: "19.521.864-1", curso: "5° Básico A", asignatura: "Lenguaje Y Comunicación", fecha: "25/03/2025", hora: "5", leccionarioRegistrado: "NO" },
+            { docente: "Paulette Reveco Poblete", run: "19.521.864-1", curso: "5° Básico A", asignatura: "Lenguaje Y Comunicación", fecha: "25/03/2025", hora: "6", leccionarioRegistrado: "NO" },
+            { docente: "Sujey Inzunza López", run: "16.088.531-9", curso: "Nivel de transición 1 A", asignatura: "Comunicación Integral", fecha: "25/03/2025", hora: "7", leccionarioRegistrado: "NO" },
+            { docente: "Sujey Inzunza López", run: "16.088.531-9", curso: "Nivel de transición 1 A", asignatura: "Comunicación Integral", fecha: "25/03/2025", hora: "8", leccionarioRegistrado: "NO" },
+            { docente: "Sujey Inzunza López", run: "16.088.531-9", curso: "Nivel de transición 1 A", asignatura: "Interacción Y Comprensión Del Entorno", fecha: "25/03/2025", hora: "5", leccionarioRegistrado: "NO" },
+            { docente: "Sujey Inzunza López", run: "16.088.531-9", curso: "Nivel de transición 1 A", asignatura: "Interacción Y Comprensión Del Entorno", fecha: "25/03/2025", hora: "6", leccionarioRegistrado: "NO" },
+            { docente: "Paulette Reveco Poblete", run: "19.521.864-1", curso: "8° Básico A", asignatura: "Lengua Y Literatura", fecha: "25/03/2025", hora: "1", leccionarioRegistrado: "NO" },
+            { docente: "Paulette Reveco Poblete", run: "19.521.864-1", curso: "8° Básico A", asignatura: "Lengua Y Literatura", fecha: "25/03/2025", hora: "2", leccionarioRegistrado: "NO" },
+            { docente: "Paulette Reveco Poblete", run: "19.521.864-1", curso: "8° Básico A", asignatura: "Lengua Y Literatura", fecha: "25/03/2025", hora: "7", leccionarioRegistrado: "NO" },
+            { docente: "Paulette Reveco Poblete", run: "19.521.864-1", curso: "7º Básico A", asignatura: "Lengua Y Literatura", fecha: "25/03/2025", hora: "3", leccionarioRegistrado: "NO" },
+            { docente: "Paulette Reveco Poblete", run: "19.521.864-1", curso: "7° Básico A", asignatura: "Lengua Y Literatura", fecha: "25/03/2025", hora: "4", leccionarioRegistrado: "NO" },
+            { docente: "Francisco Segovia Mella", run: "8.546.943-6", curso: "2º Básico A", asignatura: "Educación Física Y Salud", fecha: "24/03/2025", hora: "7", leccionarioRegistrado: "NO" },
+            { docente: "Francisco Segovia Mella", run: "8.546.943-6", curso: "2º Básico A", asignatura: "Educación Física Y Salud", fecha: "24/03/2025", hora: "8", leccionarioRegistrado: "NO" },
+            { docente: "Sujey Inzunza López", run: "16.088.531-9", curso: "Nivel de transición 1 A", asignatura: "Desarrollo Personal Y Social", fecha: "24/03/2025", hora: "3", leccionarioRegistrado: "NO" },
+            { docente: "Sujey Inzunza López", run: "16.088.531-9", curso: "Nivel de transición 1 A", asignatura: "Desarrollo Personal Y Social", fecha: "24/03/2025", hora: "4", leccionarioRegistrado: "NO" },
+            { docente: "Sujey Inzunza López", run: "16.088.531-9", curso: "Nivel de transición 1 A", asignatura: "Comunicación Integral", fecha: "24/03/2025", hora: "1", leccionarioRegistrado: "NO" },
+            { docente: "Sujey Inzunza López", run: "16.088.531-9", curso: "Nivel de transición 1 A", asignatura: "Comunicación Integral", fecha: "24/03/2025", hora: "2", leccionarioRegistrado: "NO" },
+            { docente: "Sujey Inzunza López", run: "16.088.531-9", curso: "Nivel de transición 1 A", asignatura: "Comunicación Integral", fecha: "24/03/2025", hora: "5", leccionarioRegistrado: "NO" },
+            { docente: "Sujey Inzunza López", run: "16.088.531-9", curso: "Nivel de transición 1 A", asignatura: "Comunicación Integral", fecha: "24/03/2025", hora: "6", leccionarioRegistrado: "NO" },
+            { docente: "Sujey Inzunza López", run: "16.088.531-9", curso: "Nivel de transición 1 A", asignatura: "Interacción Y Comprensión Del Entorno", fecha: "24/03/2025", hora: "7", leccionarioRegistrado: "NO" },
+            { docente: "Sujey Inzunza López", run: "16.088.531-9", curso: "Nivel de transición 1 A", asignatura: "Interacción Y Comprensión Del Entorno", fecha: "24/03/2025", hora: "8", leccionarioRegistrado: "NO" },
+            { docente: "Paulette Reveco Poblete", run: "19.521.864-1", curso: "7° Básico A", asignatura: "Lengua Y Literatura", fecha: "24/03/2025", hora: "3", leccionarioRegistrado: "NO" },
+            { docente: "Paulette Reveco Poblete", run: "19.521.864-1", curso: "7° Básico A", asignatura: "Lengua Y Literatura", fecha: "24/03/2025", hora: "4", leccionarioRegistrado: "NO" },
+            { docente: "Paulette Reveco Poblete", run: "19.521.864-1", curso: "6º Básico A", asignatura: "Lenguaje Y Comunicación", fecha: "24/03/2025", hora: "5", leccionarioRegistrado: "NO" },
+            { docente: "Paulette Reveco Poblete", run: "19.521.864-1", curso: "6° Básico A", asignatura: "Lenguaje Y Comunicación", fecha: "24/03/2025", hora: "6", leccionarioRegistrado: "NO" },
+            { docente: "Diego Burgos Godoy", run: "17.681.243-5", curso: "3º Básico A", asignatura: "Idioma Extranjero: Inglés", fecha: "24/03/2025", hora: "7", leccionarioRegistrado: "NO" },
+            { docente: "Diego Burgos Godoy", run: "17.681.243-5", curso: "3º Básico A", asignatura: "Idioma Extranjero: Inglés", fecha: "24/03/2025", hora: "8", leccionarioRegistrado: "NO" },
+            { docente: "Paulette Reveco Poblete", run: "19.521.864-1", curso: "5º Básico A", asignatura: "Lenguaje Y Comunicación", fecha: "21/03/2025", hora: "3", leccionarioRegistrado: "NO" },
+            { docente: "Paulette Reveco Poblete", run: "19.521.864-1", curso: "5° Básico A", asignatura: "Lenguaje Y Comunicación", fecha: "21/03/2025", hora: "4", leccionarioRegistrado: "NO" },
+            { docente: "Felipe Millanao Avendaño", run: "17.253.684-0", curso: "5° Básico A", asignatura: "Orientación", fecha: "21/03/2025", hora: "6", leccionarioRegistrado: "NO" },
+            { docente: "Sujey Inzunza López", run: "16.088.531-9", curso: "Nivel de transición 1 A", asignatura: "Desarrollo Personal Y Social", fecha: "21/03/2025", hora: "5", leccionarioRegistrado: "NO" },
+            { docente: "Sujey Inzunza López", run: "16.088.531-9", curso: "Nivel de transición 1 A", asignatura: "Desarrollo Personal Y Social", fecha: "21/03/2025", hora: "6", leccionarioRegistrado: "NO" },
+            { docente: "Paulette Reveco Poblete", run: "19.521.864-1", curso: "8° Básico A", asignatura: "Lengua Y Literatura", fecha: "21/03/2025", hora: "1", leccionarioRegistrado: "NO" },
+            { docente: "Paulette Reveco Poblete", run: "19.521.864-1", curso: "8° Básico A", asignatura: "Lengua Y Literatura", fecha: "21/03/2025", hora: "2", leccionarioRegistrado: "NO" },
+            { docente: "Catalina Campillay Del Canto", run: "17.576.667-7", curso: "Nivel de transición 2 A", asignatura: "Comunicación Integral", fecha: "21/03/2025", hora: "3", leccionarioRegistrado: "NO" },
+            { docente: "Catalina Campillay Del Canto", run: "17.576.667-7", curso: "Nivel de transición 2 A", asignatura: "Comunicación Integral", fecha: "21/03/2025", hora: "4", leccionarioRegistrado: "NO" },
+            { docente: "Catalina Campillay Del Canto", run: "17.576.667-7", curso: "Nivel de transición 2 A", asignatura: "Comunicación Integral", fecha: "21/03/2025", hora: "5", leccionarioRegistrado: "NO" },
+            { docente: "Catalina Campillay Del Canto", run: "17.576.667-7", curso: "Nivel de transición 2 A", asignatura: "Comunicación Integral", fecha: "21/03/2025", hora: "6", leccionarioRegistrado: "NO" },
+            { docente: "Paulette Reveco Poblete", run: "19.521.864-1", curso: "5° Básico A", asignatura: "Lenguaje Y Comunicación", fecha: "20/03/2025", hora: "5", leccionarioRegistrado: "NO" },
+            { docente: "Paulette Reveco Poblete", run: "19.521.864-1", curso: "5° Básico A", asignatura: "Lenguaje Y Comunicación", fecha: "20/03/2025", hora: "6", leccionarioRegistrado: "NO" },
+            { docente: "Sujey Inzunza López", run: "16.088.531-9", curso: "Nivel de transición 1 A", asignatura: "Comunicación Integral", fecha: "20/03/2025", hora: "7", leccionarioRegistrado: "NO" },
+            { docente: "Sujey Inzunza López", run: "16.088.531-9", curso: "Nivel de transición 1 A", asignatura: "Comunicación Integral", fecha: "20/03/2025", hora: "8", leccionarioRegistrado: "NO" },
+            { docente: "Sujey Inzunza López", run: "16.088.531-9", curso: "Nivel de transición 1 A", asignatura: "Interacción Y Comprensión Del Entorno", fecha: "20/03/2025", hora: "1", leccionarioRegistrado: "NO" },
+            { docente: "Sujey Inzunza López", run: "16.088.531-9", curso: "Nivel de transición 1 A", asignatura: "Interacción Y Comprensión Del Entorno", fecha: "20/03/2025", hora: "2", leccionarioRegistrado: "NO" },
+            { docente: "Sujey Inzunza López", run: "16.088.531-9", curso: "Nivel de transición 1 A", asignatura: "Interacción Y Comprensión Del Entorno", fecha: "20/03/2025", hora: "3", leccionarioRegistrado: "NO" },
+            { docente: "Sujey Inzunza López", run: "16.088.531-9", curso: "Nivel de transición 1 A", asignatura: "Interacción Y Comprensión Del Entorno", fecha: "20/03/2025", hora: "4", leccionarioRegistrado: "NO" },
+            { docente: "Paulette Reveco Poblete", run: "19.521.864-1", curso: "7º Básico A", asignatura: "Lengua Y Literatura", fecha: "20/03/2025", hora: "1", leccionarioRegistrado: "NO" },
+            { docente: "Paulette Reveco Poblete", run: "19.521.864-1", curso: "7º Básico A", asignatura: "Lengua Y Literatura", fecha: "20/03/2025", hora: "2", leccionarioRegistrado: "NO" },
+            { docente: "Paulette Reveco Poblete", run: "19.521.864-1", curso: "6º Básico A", asignatura: "Lenguaje Y Comunicación", fecha: "20/03/2025", hora: "3", leccionarioRegistrado: "NO" },
+            { docente: "Paulette Reveco Poblete", run: "19.521.864-1", curso: "6º Básico A", asignatura: "Lenguaje Y Comunicación", fecha: "20/03/2025", hora: "4", leccionarioRegistrado: "NO" },
+            { docente: "Sujey Inzunza López", run: "16.088.531-9", curso: "Nivel de transición 1 A", asignatura: "Comunicación Integral", fecha: "19/03/2025", hora: "3", leccionarioRegistrado: "NO" },
+            { docente: "Sujey Inzunza López", run: "16.088.531-9", curso: "Nivel de transición 1 A", asignatura: "Comunicación Integral", fecha: "19/03/2025", hora: "4", leccionarioRegistrado: "NO" },
+            { docente: "Sujey Inzunza López", run: "16.088.531-9", curso: "Nivel de transición 1 A", asignatura: "Interacción Y Comprensión Del Entorno", fecha: "19/03/2025", hora: "7", leccionarioRegistrado: "NO" },
+            { docente: "Sujey Inzunza López", run: "16.088.531-9", curso: "Nivel de transición 1 A", asignatura: "Interacción Y Comprensión Del Entorno", fecha: "19/03/2025", hora: "8", leccionarioRegistrado: "NO" },
+            { docente: "Paulette Reveco Poblete", run: "19.521.864-1", curso: "8° Básico A", asignatura: "Lengua Y Literatura", fecha: "19/03/2025", hora: "1", leccionarioRegistrado: "NO" },
+            { docente: "Paulette Reveco Poblete", run: "19.521.864-1", curso: "8° Básico A", asignatura: "Lengua Y Literatura", fecha: "19/03/2025", hora: "2", leccionarioRegistrado: "NO" },
+            { docente: "Paulette Reveco Poblete", run: "19.521.864-1", curso: "7º Básico A", asignatura: "Lengua Y Literatura", fecha: "19/03/2025", hora: "5", leccionarioRegistrado: "NO" },
+            { docente: "Paulette Reveco Poblete", run: "19.521.864-1", curso: "6º Básico A", asignatura: "Lenguaje Y Comunicación", fecha: "19/03/2025", hora: "3", leccionarioRegistrado: "NO" },
+            { docente: "Paulette Reveco Poblete", run: "19.521.864-1", curso: "6º Básico A", asignatura: "Lenguaje Y Comunicación", fecha: "19/03/2025", hora: "4", leccionarioRegistrado: "NO" },
+            { docente: "Paulette Reveco Poblete", run: "19.521.864-1", curso: "5° Básico A", asignatura: "Lenguaje Y Comunicación", fecha: "18/03/2025", hora: "5", leccionarioRegistrado: "NO" },
+            { docente: "Paulette Reveco Poblete", run: "19.521.864-1", curso: "5° Básico A", asignatura: "Lenguaje Y Comunicación", fecha: "18/03/2025", hora: "6", leccionarioRegistrado: "NO" },
+            { docente: "Sujey Inzunza López", run: "16.088.531-9", curso: "Nivel de transición 1 A", asignatura: "Interacción Y Comprensión Del Entorno", fecha: "18/03/2025", hora: "5", leccionarioRegistrado: "NO" },
+            { docente: "Sujey Inzunza López", run: "16.088.531-9", curso: "Nivel de transición 1 A", asignatura: "Interacción Y Comprensión Del Entorno", fecha: "18/03/2025", hora: "6", leccionarioRegistrado: "NO" },
+            { docente: "Paulette Reveco Poblete", run: "19.521.864-1", curso: "8° Básico A", asignatura: "Lengua Y Literatura", fecha: "18/03/2025", hora: "1", leccionarioRegistrado: "NO" },
+            { docente: "Paulette Reveco Poblete", run: "19.521.864-1", curso: "8° Básico A", asignatura: "Lengua Y Literatura", fecha: "18/03/2025", hora: "2", leccionarioRegistrado: "NO" },
+            { docente: "Paulette Reveco Poblete", run: "19.521.864-1", curso: "8° Básico A", asignatura: "Lengua Y Literatura", fecha: "18/03/2025", hora: "7", leccionarioRegistrado: "NO" },
+            { docente: "Paulette Reveco Poblete", run: "19.521.864-1", curso: "7° Básico A", asignatura: "Lengua Y Literatura", fecha: "18/03/2025", hora: "3", leccionarioRegistrado: "NO" },
+            { docente: "Paulette Reveco Poblete", run: "19.521.864-1", curso: "7° Básico A", asignatura: "Lengua Y Literatura", fecha: "18/03/2025", hora: "4", leccionarioRegistrado: "NO" },
+            { docente: "Sujey Inzunza López", run: "16.088.531-9", curso: "Nivel de transición 1 A", asignatura: "Interacción Y Comprensión Del Entorno", fecha: "17/03/2025", hora: "7", leccionarioRegistrado: "NO" },
+            { docente: "Sujey Inzunza López", run: "16.088.531-9", curso: "Nivel de transición 1 A", asignatura: "Interacción Y Comprensión Del Entorno", fecha: "17/03/2025", hora: "8", leccionarioRegistrado: "NO" },
+            { docente: "Catalina Campillay Del Canto", run: "17.576.667-7", curso: "Nivel de transición 2 A", asignatura: "Desarrollo Personal Y Social", fecha: "17/03/2025", hora: "5", leccionarioRegistrado: "NO" },
+            { docente: "Catalina Campillay Del Canto", run: "17.576.667-7", curso: "Nivel de transición 2 A", asignatura: "Desarrollo Personal Y Social", fecha: "17/03/2025", hora: "6", leccionarioRegistrado: "NO" },
+            { docente: "Paulette Reveco Poblete", run: "19.521.864-1", curso: "7° Básico A", asignatura: "Lengua Y Literatura", fecha: "17/03/2025", hora: "3", leccionarioRegistrado: "NO" },
+            { docente: "Paulette Reveco Poblete", run: "19.521.864-1", curso: "7° Básico A", asignatura: "Lengua Y Literatura", fecha: "17/03/2025", hora: "4", leccionarioRegistrado: "NO" },
+            { docente: "Paulette Reveco Poblete", run: "19.521.864-1", curso: "6° Básico A", asignatura: "Lenguaje Y Comunicación", fecha: "17/03/2025", hora: "5", leccionarioRegistrado: "NO" },
+            { docente: "Paulette Reveco Poblete", run: "19.521.864-1", curso: "6° Básico A", asignatura: "Lenguaje Y Comunicación", fecha: "17/03/2025", hora: "6", leccionarioRegistrado: "NO" },
+            { docente: "Paulette Reveco Poblete", run: "19.521.864-1", curso: "5° Básico A", asignatura: "Lenguaje Y Comunicación", fecha: "14/03/2025", hora: "3", leccionarioRegistrado: "NO" },
+            { docente: "Paulette Reveco Poblete", run: "19.521.864-1", curso: "5° Básico A", asignatura: "Lenguaje Y Comunicación", fecha: "14/03/2025", hora: "4", leccionarioRegistrado: "NO" },
+            { docente: "Felipe Millanao Avendaño", run: "17.253.684-0", curso: "5° Básico A", asignatura: "Orientación", fecha: "14/03/2025", hora: "6", leccionarioRegistrado: "NO" },
+            { docente: "Paulette Reveco Poblete", run: "19.521.864-1", curso: "8° Básico A", asignatura: "Lengua Y Literatura", fecha: "14/03/2025", hora: "1", leccionarioRegistrado: "NO" },
+            { docente: "Paulette Reveco Poblete", run: "19.521.864-1", curso: "8° Básico A", asignatura: "Lengua Y Literatura", fecha: "14/03/2025", hora: "2", leccionarioRegistrado: "NO" },
+            { docente: "Catherina Jara Muñoz", run: "15.121.529-7", curso: "1° Básico A", asignatura: "Lenguaje Y Comunicación", fecha: "14/03/2025", hora: "1", leccionarioRegistrado: "NO" },
+            { docente: "Catherina Jara Muñoz", run: "15.121.529-7", curso: "1° Básico A", asignatura: "Lenguaje Y Comunicación", fecha: "14/03/2025", hora: "2", leccionarioRegistrado: "NO" },
+            { docente: "Catherina Jara Muñoz", run: "15.121.529-7", curso: "1° Básico A", asignatura: "Ciencias Naturales", fecha: "14/03/2025", hora: "5", leccionarioRegistrado: "NO" },
+            { docente: "Catherina Jara Muñoz", run: "15.121.529-7", curso: "1° Básico A", asignatura: "Historia, Geografía Y Ciencias Sociales", fecha: "14/03/2025", hora: "6", leccionarioRegistrado: "NO" },
+            { docente: "Paulette Reveco Poblete", run: "19.521.864-1", curso: "5° Básico A", asignatura: "Lenguaje Y Comunicación", fecha: "13/03/2025", hora: "5", leccionarioRegistrado: "NO" },
+            { docente: "Paulette Reveco Poblete", run: "19.521.864-1", curso: "5° Básico A", asignatura: "Lenguaje Y Comunicación", fecha: "13/03/2025", hora: "6", leccionarioRegistrado: "NO" },
+            { docente: "Paula Briceño Saint-jean", run: "12.166.206-K", curso: "5° Básico A", asignatura: "Matemática", fecha: "13/03/2025", hora: "3", leccionarioRegistrado: "NO" },
+            { docente: "Paula Briceño Saint-jean", run: "12.166.206-K", curso: "5° Básico A", asignatura: "Matemática", fecha: "13/03/2025", hora: "4", leccionarioRegistrado: "NO" },
+            { docente: "Sujey Inzunza López", run: "16.088.531-9", curso: "Nivel de transición 1 A", asignatura: "Desarrollo Personal Y Social", fecha: "13/03/2025", hora: "5", leccionarioRegistrado: "NO" },
+            { docente: "Sujey Inzunza López", run: "16.088.531-9", curso: "Nivel de transición 1 A", asignatura: "Desarrollo Personal Y Social", fecha: "13/03/2025", hora: "6", leccionarioRegistrado: "NO" },
+            { docente: "Sujey Inzunza López", run: "16.088.531-9", curso: "Nivel de transición 1 A", asignatura: "Comunicación Integral", fecha: "13/03/2025", hora: "7", leccionarioRegistrado: "NO" },
+            { docente: "Sujey Inzunza López", run: "16.088.531-9", curso: "Nivel de transición 1 A", asignatura: "Comunicación Integral", fecha: "13/03/2025", hora: "8", leccionarioRegistrado: "NO" },
+            { docente: "Sujey Inzunza López", run: "16.088.531-9", curso: "Nivel de transición 1 A", asignatura: "Interacción Y Comprensión Del Entorno", fecha: "13/03/2025", hora: "1", leccionarioRegistrado: "NO" },
+            { docente: "Sujey Inzunza López", run: "16.088.531-9", curso: "Nivel de transición 1 A", asignatura: "Interacción Y Comprensión Del Entorno", fecha: "13/03/2025", hora: "2", leccionarioRegistrado: "NO" },
+            { docente: "Sujey Inzunza López", run: "16.088.531-9", curso: "Nivel de transición 1 A", asignatura: "Interacción Y Comprensión Del Entorno", fecha: "13/03/2025", hora: "3", leccionarioRegistrado: "NO" },
+            { docente: "Sujey Inzunza López", run: "16.088.531-9", curso: "Nivel de transición 1 A", asignatura: "Interacción Y Comprensión Del Entorno", fecha: "13/03/2025", hora: "4", leccionarioRegistrado: "NO" },
+            { docente: "Paula Briceño Saint-jean", run: "12.166.206-K", curso: "8° Básico A", asignatura: "Matemática", fecha: "13/03/2025", hora: "1", leccionarioRegistrado: "NO" },
+            { docente: "Paula Briceño Saint-jean", run: "12.166.206-K", curso: "8° Básico A", asignatura: "Matemática", fecha: "13/03/2025", hora: "2", leccionarioRegistrado: "NO" },
+            { docente: "Catalina Campillay Del Canto", run: "17.576.667-7", curso: "Nivel de transición 2 A", asignatura: "Interacción Y Comprensión Del Entorno", fecha: "13/03/2025", hora: "3", leccionarioRegistrado: "NO" },
+            { docente: "Catalina Campillay Del Canto", run: "17.576.667-7", curso: "Nivel de transición 2 A", asignatura: "Interacción Y Comprensión Del Entorno", fecha: "13/03/2025", hora: "4", leccionarioRegistrado: "NO" },
+            { docente: "Catalina Campillay Del Canto", run: "17.576.667-7", curso: "Nivel de transición 2 A", asignatura: "Interacción Y Comprensión Del Entorno", fecha: "13/03/2025", hora: "5", leccionarioRegistrado: "NO" },
+            { docente: "Catalina Campillay Del Canto", run: "17.576.667-7", curso: "Nivel de transición 2 A", asignatura: "Interacción Y Comprensión Del Entorno", fecha: "13/03/2025", hora: "6", leccionarioRegistrado: "NO" },
+            { docente: "Paulette Reveco Poblete", run: "19.521.864-1", curso: "7° Básico A", asignatura: "Lengua Y Literatura", fecha: "13/03/2025", hora: "1", leccionarioRegistrado: "NO" },
+            { docente: "Paulette Reveco Poblete", run: "19.521.864-1", curso: "7° Básico A", asignatura: "Lengua Y Literatura", fecha: "13/03/2025", hora: "2", leccionarioRegistrado: "NO" },
+            { docente: "Paulette Reveco Poblete", run: "19.521.864-1", curso: "6° Básico A", asignatura: "Lenguaje Y Comunicación", fecha: "13/03/2025", hora: "3", leccionarioRegistrado: "NO" },
+            { docente: "Paulette Reveco Poblete", run: "19.521.864-1", curso: "6° Básico A", asignatura: "Lenguaje Y Comunicación", fecha: "13/03/2025", hora: "4", leccionarioRegistrado: "NO" },
+            { docente: "Marjorie Huaiqui Hernández", run: "15.482.578-9", curso: "2° Básico A", asignatura: "Lengua Indígena: Mapuzugun", fecha: "13/03/2025", hora: "5", leccionarioRegistrado: "NO" },
+            { docente: "Marjorie Huaiqui Hernández", run: "15.482.578-9", curso: "2° Básico A", asignatura: "Lengua Indígena: Mapuzugun", fecha: "13/03/2025", hora: "6", leccionarioRegistrado: "NO" },
+            { docente: "Marjorie Huaiqui Hernández", run: "15.482.578-9", curso: "3° Básico A", asignatura: "Lengua Indígena: Mapuzugun", fecha: "13/03/2025", hora: "7", leccionarioRegistrado: "NO" },
+            { docente: "Marjorie Huaiqui Hernández", run: "15.482.578-9", curso: "3° Básico A", asignatura: "Lengua Indígena: Mapuzugun", fecha: "13/03/2025", hora: "8", leccionarioRegistrado: "NO" },
+            { docente: "Sujey Inzunza López", run: "16.088.531-9", curso: "Nivel de transición 1 A", asignatura: "Comunicación Integral", fecha: "12/03/2025", hora: "3", leccionarioRegistrado: "NO" },
+            { docente: "Sujey Inzunza López", run: "16.088.531-9", curso: "Nivel de transición 1 A", asignatura: "Comunicación Integral", fecha: "12/03/2025", hora: "4", leccionarioRegistrado: "NO" },
+            { docente: "Sujey Inzunza López", run: "16.088.531-9", curso: "Nivel de transición 1 A", asignatura: "Interacción Y Comprensión Del Entorno", fecha: "12/03/2025", hora: "7", leccionarioRegistrado: "NO" },
+            { docente: "Sujey Inzunza López", run: "16.088.531-9", curso: "Nivel de transición 1 A", asignatura: "Interacción Y Comprensión Del Entorno", fecha: "12/03/2025", hora: "8", leccionarioRegistrado: "NO" },
+            { docente: "Paula Briceño Saint-jean", run: "12.166.206-K", curso: "8° Básico A", asignatura: "Matemática", fecha: "12/03/2025", hora: "3", leccionarioRegistrado: "NO" },
+            { docente: "Paula Briceño Saint-jean", run: "12.166.206-K", curso: "8° Básico A", asignatura: "Matemática", fecha: "12/03/2025", hora: "4", leccionarioRegistrado: "NO" },
+            { docente: "Paulette Reveco Poblete", run: "19.521.864-1", curso: "8° Básico A", asignatura: "Lengua Y Literatura", fecha: "12/03/2025", hora: "1", leccionarioRegistrado: "NO" },
+            { docente: "Paulette Reveco Poblete", run: "19.521.864-1", curso: "8° Básico A", asignatura: "Lengua Y Literatura", fecha: "12/03/2025", hora: "2", leccionarioRegistrado: "NO" },
+            { docente: "Catherina Jara Muñoz", run: "15.121.529-7", curso: "1° Básico A", asignatura: "Matemática", fecha: "12/03/2025", hora: "1", leccionarioRegistrado: "NO" },
+            { docente: "Catherina Jara Muñoz", run: "15.121.529-7", curso: "1° Básico A", asignatura: "Matemática", fecha: "12/03/2025", hora: "2", leccionarioRegistrado: "NO" },
+            { docente: "Paula Briceño Saint-jean", run: "12.166.206-K", curso: "7° Básico A", asignatura: "Matemática", fecha: "12/03/2025", hora: "7", leccionarioRegistrado: "NO" },
+            { docente: "Paula Briceño Saint-jean", run: "12.166.206-K", curso: "7° Básico A", asignatura: "Matemática", fecha: "12/03/2025", hora: "8", leccionarioRegistrado: "NO" },
+            { docente: "Paulette Reveco Poblete", run: "19.521.864-1", curso: "7° Básico A", asignatura: "Lengua Y Literatura", fecha: "12/03/2025", hora: "5", leccionarioRegistrado: "NO" },
+            { docente: "Paulette Reveco Poblete", run: "19.521.864-1", curso: "6° Básico A", asignatura: "Lenguaje Y Comunicación", fecha: "12/03/2025", hora: "3", leccionarioRegistrado: "NO" },
+            { docente: "Paulette Reveco Poblete", run: "19.521.864-1", curso: "6° Básico A", asignatura: "Lenguaje Y Comunicación", fecha: "12/03/2025", hora: "4", leccionarioRegistrado: "NO" },
+            { docente: "Marjorie Huaiqui Hernández", run: "15.482.578-9", curso: "1° Básico A", asignatura: "Lengua Indígena: Mapuzugun", fecha: "12/03/2025", hora: "7", leccionarioRegistrado: "NO" },
+            { docente: "Marjorie Huaiqui Hernández", run: "15.482.578-9", curso: "1° Básico A", asignatura: "Lengua Indígena: Mapuzugun", fecha: "12/03/2025", hora: "8", leccionarioRegistrado: "NO" },
+            { docente: "Marjorie Huaiqui Hernández", run: "15.482.578-9", curso: "3° Básico A", asignatura: "Lengua Indígena: Mapuzugun", fecha: "12/03/2025", hora: "5", leccionarioRegistrado: "NO" },
+            { docente: "Marjorie Huaiqui Hernández", run: "15.482.578-9", curso: "3° Básico A", asignatura: "Lengua Indígena: Mapuzugun", fecha: "12/03/2025", hora: "6", leccionarioRegistrado: "NO" },
+            { docente: "Paulette Reveco Poblete", run: "19.521.864-1", curso: "5° Básico A", asignatura: "Lenguaje Y Comunicación", fecha: "11/03/2025", hora: "5", leccionarioRegistrado: "NO" },
+            { docente: "Paulette Reveco Poblete", run: "19.521.864-1", curso: "5° Básico A", asignatura: "Lenguaje Y Comunicación", fecha: "11/03/2025", hora: "6", leccionarioRegistrado: "NO" },
+            { docente: "Sujey Inzunza López", run: "16.088.531-9", curso: "Nivel de transición 1 A", asignatura: "Interacción Y Comprensión Del Entorno", fecha: "11/03/2025", hora: "5", leccionarioRegistrado: "NO" },
+            { docente: "Sujey Inzunza López", run: "16.088.531-9", curso: "Nivel de transición 1 A", asignatura: "Interacción Y Comprensión Del Entorno", fecha: "11/03/2025", hora: "6", leccionarioRegistrado: "NO" },
+            { docente: "Paulette Reveco Poblete", run: "19.521.864-1", curso: "8° Básico A", asignatura: "Lengua Y Literatura", fecha: "11/03/2025", hora: "1", leccionarioRegistrado: "NO" },
+            { docente: "Paulette Reveco Poblete", run: "19.521.864-1", curso: "8° Básico A", asignatura: "Lengua Y Literatura", fecha: "11/03/2025", hora: "2", leccionarioRegistrado: "NO" },
+            { docente: "Paulette Reveco Poblete", run: "19.521.864-1", curso: "8° Básico A", asignatura: "Lengua Y Literatura", fecha: "11/03/2025", hora: "7", leccionarioRegistrado: "NO" },
+            { docente: "Paulette Reveco Poblete", run: "19.521.864-1", curso: "7° Básico A", asignatura: "Lengua Y Literatura", fecha: "11/03/2025", hora: "3", leccionarioRegistrado: "NO" },
+            { docente: "Paulette Reveco Poblete", run: "19.521.864-1", curso: "7° Básico A", asignatura: "Lengua Y Literatura", fecha: "11/03/2025", hora: "4", leccionarioRegistrado: "NO" },
+            { docente: "Marjorie Huaiqui Hernández", run: "15.482.578-9", curso: "1° Básico A", asignatura: "Lengua Indígena: Mapuzugun", fecha: "11/03/2025", hora: "7", leccionarioRegistrado: "NO" },
+            { docente: "Marjorie Huaiqui Hernández", run: "15.482.578-9", curso: "1° Básico A", asignatura: "Lengua Indígena: Mapuzugun", fecha: "11/03/2025", hora: "8", leccionarioRegistrado: "NO" },
+            { docente: "Marjorie Huaiqui Hernández", run: "15.482.578-9", curso: "2° Básico A", asignatura: "Lengua Indígena: Mapuzugun", fecha: "11/03/2025", hora: "5", leccionarioRegistrado: "NO" },
+            { docente: "Marjorie Huaiqui Hernández", run: "15.482.578-9", curso: "2° Básico A", asignatura: "Lengua Indígena: Mapuzugun", fecha: "11/03/2025", hora: "6", leccionarioRegistrado: "NO" },
+            { docente: "Marjorie Huaiqui Hernández", run: "15.482.578-9", curso: "Nivel de transición 1 A", asignatura: "Lengua Indígena: Mapuzugun", fecha: "11/03/2025", hora: "3", leccionarioRegistrado: "NO" },
+            { docente: "Marjorie Huaiqui Hernández", run: "15.482.578-9", curso: "Nivel de transición 1 A", asignatura: "Lengua Indígena: Mapuzugun", fecha: "11/03/2025", hora: "4", leccionarioRegistrado: "NO" },
+            { docente: "Marjorie Huaiqui Hernández", run: "15.482.578-9", curso: "Nivel de transición 2 A", asignatura: "Lengua Indígena: Mapuzugun", fecha: "11/03/2025", hora: "1", leccionarioRegistrado: "NO" },
+            { docente: "Marjorie Huaiqui Hernández", run: "15.482.578-9", curso: "Nivel de transición 2 A", asignatura: "Lengua Indígena: Mapuzugun", fecha: "11/03/2025", hora: "2", leccionarioRegistrado: "NO" },
+            { docente: "Sujey Inzunza López", run: "16.088.531-9", curso: "Nivel de transición 1 A", asignatura: "Desarrollo Personal Y Social", fecha: "10/03/2025", hora: "3", leccionarioRegistrado: "NO" },
+            { docente: "Sujey Inzunza López", run: "16.088.531-9", curso: "Nivel de transición 1 A", asignatura: "Desarrollo Personal Y Social", fecha: "10/03/2025", hora: "4", leccionarioRegistrado: "NO" },
+            { docente: "Sujey Inzunza López", run: "16.088.531-9", curso: "Nivel de transición 1 A", asignatura: "Comunicación Integral", fecha: "10/03/2025", hora: "1", leccionarioRegistrado: "NO" },
+            { docente: "Sujey Inzunza López", run: "16.088.531-9", curso: "Nivel de transición 1 A", asignatura: "Comunicación Integral", fecha: "10/03/2025", hora: "2", leccionarioRegistrado: "NO" },
+            { docente: "Sujey Inzunza López", run: "16.088.531-9", curso: "Nivel de transición 1 A", asignatura: "Comunicación Integral", fecha: "10/03/2025", hora: "5", leccionarioRegistrado: "NO" },
+            { docente: "Sujey Inzunza López", run: "16.088.531-9", curso: "Nivel de transición 1 A", asignatura: "Comunicación Integral", fecha: "10/03/2025", hora: "6", leccionarioRegistrado: "NO" },
+            { docente: "Sujey Inzunza López", run: "16.088.531-9", curso: "Nivel de transición 1 A", asignatura: "Interacción Y Comprensión Del Entorno", fecha: "10/03/2025", hora: "7", leccionarioRegistrado: "NO" },
+            { docente: "Sujey Inzunza López", run: "16.088.531-9", curso: "Nivel de transición 1 A", asignatura: "Interacción Y Comprensión Del Entorno", fecha: "10/03/2025", hora: "8", leccionarioRegistrado: "NO" },
+            { docente: "Paula Briceño Saint-jean", run: "12.166.206-K", curso: "8° Básico A", asignatura: "Matemática", fecha: "10/03/2025", hora: "3", leccionarioRegistrado: "NO" },
+            { docente: "Paula Briceño Saint-jean", run: "12.166.206-K", curso: "8° Básico A", asignatura: "Matemática", fecha: "10/03/2025", hora: "4", leccionarioRegistrado: "NO" },
+            { docente: "Catalina Campillay Del Canto", run: "17.576.667-7", curso: "Nivel de transición 2 A", asignatura: "Interacción Y Comprensión Del Entorno", fecha: "10/03/2025", hora: "7", leccionarioRegistrado: "NO" },
+            { docente: "Catalina Campillay Del Canto", run: "17.576.667-7", curso: "Nivel de transición 2 A", asignatura: "Interacción Y Comprensión Del Entorno", fecha: "10/03/2025", hora: "8", leccionarioRegistrado: "NO" },
+            { docente: "Alfredo Pavez Vásquez", run: "10.123.456-7", curso: "4° Básico A", asignatura: "Historia", fecha: "09/03/2025", hora: "1", leccionarioRegistrado: "NO" },
+            { docente: "Marjorie Huaiqui Hernández", run: "15.482.578-9", curso: "3° Básico A", asignatura: "Lengua Indígena: Mapuzugun", fecha: "09/03/2025", hora: "2", leccionarioRegistrado: "NO" },
+            { docente: "Ignacio Correa Miranda", run: "18.765.432-1", curso: "7° Básico A", asignatura: "Ciencias Naturales", fecha: "09/03/2025", hora: "3", leccionarioRegistrado: "NO" },
+            { docente: "Beatriz Bascur Andrade", run: "14.987.654-3", curso: "2° Básico A", asignatura: "Artes Visuales", fecha: "09/03/2025", hora: "4", leccionarioRegistrado: "NO" },
+            { docente: "Diego Burgos Godoy", run: "17.681.243-5", curso: "1° Básico A", asignatura: "Música", fecha: "09/03/2025", hora: "5", leccionarioRegistrado: "NO" },
+            { docente: "Leticia González Quezada", run: "13.579.246-8", curso: "8° Básico A", asignatura: "Tecnología", fecha: "09/03/2025", hora: "6", leccionarioRegistrado: "NO" },
+            { docente: "Francisco Segovia Mella", run: "8.546.943-6", curso: "6° Básico A", asignatura: "Educación Física Y Salud", fecha: "09/03/2025", hora: "7", leccionarioRegistrado: "NO" },
+            { docente: "Felipe Millanao Avendaño", run: "17.253.684-0", curso: "5° Básico A", asignatura: "Orientación", fecha: "09/03/2025", hora: "8", leccionarioRegistrado: "NO" }
+        ];
+
+        // Data for "Repitencia MINEDUC Criterio N°1" sub-tab
+        const criterio1Data = [
+            {"Curso": "4° A", "Nº": "2", "Estudiante": "Aranguren Gudiño, Luiscianyelis Sofia", "RUT": "100.791.593-1 0", "Criterio MINEDUC": "", "Porcentaje asistencia anual": "84%", "Promedio general": "4.7", "Promedios de asignatura bajo 4": "3", "Calificaciones faltantes": "5", "Asignaturas sin calificaciones": "1", "Matrícula": "Vigente"},
+            {"Curso": "4° A", "Nº": "4", "Estudiante": "Arrieta Peñaloza, Claudia Virginia", "RUT": "26.834.832-8", "Criterio MINEDUC": "", "Porcentaje asistencia anual": "72%", "Promedio general": "5.4", "Promedios de asignatura bajo 4": "3", "Calificaciones faltantes": "5", "Asignaturas sin calificaciones": "2", "Matrícula": "Vigente"},
+            {"Curso": "4° A", "Nº": "6", "Estudiante": "CABRERA MIRANDA, ANTHONY GERALD", "RUT": "24.933.616-5 1", "Criterio MINEDUC": "", "Porcentaje asistencia anual": "89%", "Promedio general": "4.6", "Promedios de asignatura bajo 4": "3", "Calificaciones faltantes": "3", "Asignaturas sin calificaciones": "1", "Matrícula": "Vigente"},
+            {"Curso": "4° A", "Nº": "12", "Estudiante": "FARIAS HUARCAYA, HENIZ KENDRINCK", "RUT": "25.092.112-8 1", "Criterio MINEDUC": "", "Porcentaje asistencia anual": "87%", "Promedio general": "4.6", "Promedios de asignatura bajo 4": "3", "Calificaciones faltantes": "3", "Asignaturas sin calificaciones": "1", "Matrícula": "Vigente"},
+            {"Curso": "4° A", "Nº": "23", "Estudiante": "Nuñez Malave, Saúl Isaías", "RUT": "26.741.000-0", "Criterio MINEDUC": "", "Porcentaje asistencia anual": "82%", "Promedio general": "4.5", "Promedios de asignatura bajo 4": "2", "Calificaciones faltantes": "4", "Asignaturas sin calificaciones": "1", "Matrícula": "Vigente"},
+            {"Curso": "5° A", "Nº": "5", "Estudiante": "BUSTAMANTE MANZANO, JUAN PABLO", "RUT": "24.122.657-3", "Criterio MINEDUC": "", "Porcentaje asistencia anual": "85%", "Promedio general": "4.5", "Promedios de asignatura bajo 4": "2", "Calificaciones faltantes": "1", "Asignaturas sin calificaciones": "nan", "Matrícula": "Vigente"},
+            {"Curso": "5° A", "Nº": "22", "Estudiante": "MORALES BERNAL, RODRIGO HUMBERTO", "RUT": "24.987.961-3 4", "Criterio MINEDUC": "", "Porcentaje asistencia anual": "84%", "Promedio general": "4.4", "Promedios de asignatura bajo 4": "2", "Calificaciones faltantes": "5", "Asignaturas sin calificaciones": "3.0", "Matrícula": "Vigente"}
+        ];
+
+        // Data for "Repitencia MINEDUC Criterio N°3" sub-tab
+        const criterio3Data = [
+            {"Curso": "4° A", "Nº": "22", "Estudiante": "MORALES BERNAL, RODRIGO HUMBERTO", "RUT": "24.987.961-3 4", "Criterio MINEDUC": "", "Porcentaje asistencia anual": "84%", "Promedio general": "4.4", "Promedios de asignatura bajo 4": "2", "Calificaciones faltantes": "5", "Asignaturas sin calificaciones": "3.0", "Matrícula": "Vigente"},
+            {"Curso": "5° A", "Nº": "5", "Estudiante": "BUSTAMANTE MANZANO, JUAN PABLO", "RUT": "24.122.657-3", "Criterio MINEDUC": "3", "Porcentaje asistencia anual": "85%", "Promedio general": "4.5", "Promedios de asignatura bajo 4": "2", "Calificaciones faltantes": "1", "Asignaturas sin calificaciones": "nan", "Matrícula": "Vigente"}
+        ];
+
+        // Data for "Repitencia MINEDUC Criterio N°4" sub-tab
+        const criterio4Data = [
+            {"Curso": "1° A", "Nº": "1", "Estudiante": "AGUILAR GAVIDIA, MIRANDA", "RUT": "26.344.601-1 4", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "50%", "Promedio general": "6.8", "Promedios de asignatura bajo 4": "", "Calificaciones faltantes": "nan", "Asignaturas sin calificaciones": "nan", "Matrícula": "Vigente"},
+            {"Curso": "1° A", "Nº": "3", "Estudiante": "BERROCAL VIDAL, LIAM ARTURO", "RUT": "26.593.985-6 4", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "78%", "Promedio general": "6.3", "Promedios de asignatura bajo 4": "", "Calificaciones faltantes": "1.0", "Asignaturas sin calificaciones": "nan", "Matrícula": "Vigente"},
+            {"Curso": "1° A", "Nº": "4", "Estudiante": "Bobadilla Calfio, Leandro Agustin", "RUT": "26.113.387-3 4", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "55%", "Promedio general": "6.0", "Promedios de asignatura bajo 4": "", "Calificaciones faltantes": "4.0", "Asignaturas sin calificaciones": "nan", "Matrícula": "Vigente"},
+            {"Curso": "1° A", "Nº": "7", "Estudiante": "CONCHA PEÑALOZA, SAÚL MAXIMILIANO", "RUT": "26.227.355-5 4", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "81%", "Promedio general": "6.8", "Promedios de asignatura bajo 4": "", "Calificaciones faltantes": "1.0", "Asignaturas sin calificaciones": "nan", "Matrícula": "Vigente"},
+            {"Curso": "1° A", "Nº": "8", "Estudiante": "CRUZ ROJAS, MAXIMILIANO ALONSO", "RUT": "26.694.543-4 4", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "79%", "Promedio general": "6.1", "Promedios de asignatura bajo 4": "3.0", "Calificaciones faltantes": "1.0", "Asignaturas sin calificaciones": "Vigente", "Matrícula": "7° A"},
+            {"Curso": "7° A", "Nº": "33", "Estudiante": "Velis Verde, Kendhra Antonella", "RUT": "28.532.411-44", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "79%", "Promedio general": "6.4", "Promedios de asignatura bajo 4": "2.0", "Calificaciones faltantes": "nan", "Asignaturas sin calificaciones": "Vigente", "Matrícula": ""},
+            {"Curso": "7° A", "Nº": "34", "Estudiante": "VERGARA NORAMBUENA, ANASTASIA RAQUEL", "RUT": "23.532.624-84", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "69%", "Promedio general": "6.4", "Promedios de asignatura bajo 4": "2.0", "Calificaciones faltantes": "nan", "Asignaturas sin calificaciones": "Vigente", "Matrícula": ""},
+            {"Curso": "7° A", "Nº": "35", "Estudiante": "Vidal Brand, Luciana", "RUT": "25.894.238-84", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "73%", "Promedio general": "6.7", "Promedios de asignatura bajo 4": "5.0", "Calificaciones faltantes": "1.0", "Asignaturas sin calificaciones": "Vigente", "Matrícula": ""},
+            {"Curso": "7° A", "Nº": "36", "Estudiante": "VILORIA MORILLO, VICTORIA VALENTINA", "RUT": "26.694.543-44", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "81%", "Promedio general": "5.6", "Promedios de asignatura bajo 4": "2.0", "Calificaciones faltantes": "nan", "Asignaturas sin calificaciones": "Vigente", "Matrícula": ""},
+            {"Curso": "8° A", "Nº": "1", "Estudiante": "Armas Games, Irene fabiana", "RUT": "100.774.008-1", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "83%", "Promedio general": "5.41", "Promedios de asignatura bajo 4": "1.0", "Calificaciones faltantes": "nan", "Asignaturas sin calificaciones": "Vigente", "Matrícula": ""},
+            {"Curso": "8° A", "Nº": "9", "Estudiante": "GARCIA PERDOMO, SILVANA ANTONELLA", "RUT": "25.818.031-34", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "84%", "Promedio general": "6.4", "Promedios de asignatura bajo 4": "nan", "Calificaciones faltantes": "nan", "Asignaturas sin calificaciones": "Vigente", "Matrícula": ""},
+            {"Curso": "8° A", "Nº": "10", "Estudiante": "GARCÍA CURÍN, NEYMIAS JESÚS", "RUT": "23.782.600-0", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "77%", "Promedio general": "5.9", "Promedios de asignatura bajo 4": "2.0", "Calificaciones faltantes": "nan", "Asignaturas sin calificaciones": "Vigente", "Matrícula": ""}
+        ];
+
+        // Data for critical cases (students with attendance <= 50%) - used for individual stats
         const criticalCases = [
             { curso: '8.° A', estudiante: 'Ramos González, Deans Evens E.', asist: '6%', prom: '5.0', criterio: '4' },
             { curso: '7.° A', estudiante: 'Camus Poblete, Diddier N.F.', asist: '24%', prom: '6.0', criterio: '4' },
@@ -467,6 +846,7 @@
             { curso: '5.° A', estudiante: 'Pais Campos, Isaías', asist: '50%', prom: '5.2', criterio: '4' }
         ];
 
+        // Data for pending lesson plans (teachers) - used for individual stats
         const pendingLessonPlans = [
             { docente: 'Sujey Inzunza López', leccionarios: 174 },
             { docente: 'Paulette Reveco Poblete', leccionarios: 140 },
@@ -485,6 +865,7 @@
             { docente: 'Ignacio Correa Miranda', leccionarios: 6 }
         ];
 
+
         // Function to show custom message box
         function showMessageBox(message) {
             document.getElementById('messageBoxText').innerText = message;
@@ -496,21 +877,81 @@
             document.getElementById('messageBoxOverlay').classList.add('hidden');
         }
 
-        // Function to open tabs
+        // Function to populate the "Leccionarios Pendientes" sub-tab table
+        function populateLessonPlanSubTab() {
+            const tableBody = document.querySelector('#lessonPlanTable tbody');
+            tableBody.innerHTML = ''; // Clear existing rows
+            lessonPlanSubTabData.forEach(data => {
+                const row = tableBody.insertRow();
+                row.className = "border-b border-gray-200 hover:bg-gray-50";
+                Object.values(data).forEach(text => {
+                    const cell = row.insertCell();
+                    cell.className = "py-3 px-4";
+                    cell.innerText = text;
+                });
+            });
+        }
+
+        // Function to populate the "Repitencia MINEDUC Criterio N°1" sub-tab table
+        function populateCriterio1Table() {
+            const tableBody = document.querySelector('#criterio1Table tbody');
+            tableBody.innerHTML = ''; // Clear existing rows
+            criterio1Data.forEach(data => {
+                const row = tableBody.insertRow();
+                row.className = "border-b border-gray-200 hover:bg-gray-50";
+                Object.values(data).forEach(text => {
+                    const cell = row.insertCell();
+                    cell.className = "py-3 px-4";
+                    cell.innerText = text;
+                });
+            });
+        }
+
+        // Function to populate the "Repitencia MINEDUC Criterio N°3" sub-tab table
+        function populateCriterio3Table() {
+            const tableBody = document.querySelector('#criterio3Table tbody');
+            tableBody.innerHTML = ''; // Clear existing rows
+            criterio3Data.forEach(data => {
+                const row = tableBody.insertRow();
+                row.className = "border-b border-gray-200 hover:bg-gray-50";
+                Object.values(data).forEach(text => {
+                    const cell = row.insertCell();
+                    cell.className = "py-3 px-4";
+                    cell.innerText = text;
+                });
+            });
+        }
+
+        // Function to populate the "Repitencia MINEDUC Criterio N°4" sub-tab table
+        function populateCriterio4Table() {
+            const tableBody = document.querySelector('#criterio4Table tbody');
+            tableBody.innerHTML = ''; // Clear existing rows
+            criterio4Data.forEach(data => {
+                const row = tableBody.insertRow();
+                row.className = "border-b border-gray-200 hover:bg-gray-50";
+                Object.values(data).forEach(text => {
+                    const cell = row.insertCell();
+                    cell.className = "py-3 px-4";
+                    cell.innerText = text;
+                });
+            });
+        }
+
+        // Function to open main tabs
         function openTab(tabId) {
-            // Get all tab content elements
+            // Get all main tab content elements
             const tabContents = document.querySelectorAll('.tab-content');
-            // Hide all tab content
+            // Hide all main tab content
             tabContents.forEach(content => content.classList.remove('active'));
 
-            // Get all tab buttons
+            // Get all main tab buttons
             const tabButtons = document.querySelectorAll('.tab-button');
-            // Deactivate all tab buttons
+            // Deactivate all main tab buttons
             tabButtons.forEach(button => button.classList.remove('active'));
 
-            // Show the selected tab content
+            // Show the selected main tab content
             document.getElementById(tabId).classList.add('active');
-            // Activate the clicked tab button
+            // Activate the clicked main tab button
             event.currentTarget.classList.add('active');
 
             // Re-render charts when their tab becomes active
@@ -520,6 +961,48 @@
                 renderReadingPieChart();
             } else if (tabId === 'teamMeetings') {
                 renderCoordinationChart();
+            } else if (tabId === 'academicDatabase') {
+                // When "Base de Datos" tab is opened, ensure the first sub-tab is active and populated
+                openSubTab('subTabLessonPlans'); // Call with default sub-tab ID
+            }
+        }
+
+        // Function to open sub-tabs within "Base de Datos"
+        function openSubTab(subTabId, event) { // Added event parameter
+            // Get all sub-tab content elements
+            const subTabContents = document.querySelectorAll('.sub-tab-content');
+            // Hide all sub-tab content
+            subTabContents.forEach(content => content.classList.remove('active'));
+
+            // Get all sub-tab buttons
+            const subTabButtons = document.querySelectorAll('.sub-tab-button');
+            // Deactivate all sub-tab buttons
+            subTabButtons.forEach(button => button.classList.remove('active'));
+
+            // Show the selected sub-tab content
+            document.getElementById(subTabId).classList.add('active');
+
+            // Activate the clicked sub-tab button
+            // Check if event exists (it won't when called from window.onload)
+            if (event && event.currentTarget) {
+                event.currentTarget.classList.add('active');
+            } else {
+                // If no event, find the button by its ID and activate it
+                const targetButton = document.getElementById('btn' + subTabId.charAt(0).toUpperCase() + subTabId.slice(1));
+                if (targetButton) {
+                    targetButton.classList.add('active');
+                }
+            }
+
+            // Populate the specific table based on the sub-tab ID
+            if (subTabId === 'subTabLessonPlans') {
+                populateLessonPlanSubTab();
+            } else if (subTabId === 'subTabCriterio1') {
+                populateCriterio1Table();
+            } else if (subTabId === 'subTabCriterio3') {
+                populateCriterio3Table();
+            } else if (subTabId === 'subTabCriterio4') {
+                populateCriterio4Table();
             }
         }
 
@@ -691,7 +1174,7 @@
                             borderRadius: 8
                         },
                         {
-                            label: 'Coordinaciones Primer Ciclo',
+                            label: 'Coordinaciones I Ciclo',
                             data: coordinationData.cicloI,
                             backgroundColor: 'rgba(153, 102, 255, 0.7)',
                             borderColor: 'rgba(153, 102, 255, 1)',
@@ -699,7 +1182,7 @@
                             borderRadius: 8
                         },
                         {
-                            label: 'Coordinaciones Segundo Ciclo',
+                            label: 'Coordinaciones II Ciclo',
                             data: coordinationData.cicloII,
                             backgroundColor: 'rgba(255, 159, 64, 0.7)',
                             borderColor: 'rgba(255, 159, 64, 1)',
@@ -939,7 +1422,7 @@
                                     color: '#64748b'
                                 },
                                 grid: {
-                                    color: '#e2e8f0'
+                                    display: false
                                 }
                             },
                             x: {
@@ -962,6 +1445,8 @@
             renderRiskCriteriaChart();
             renderReadingPieChart();
             renderCoordinationChart();
+            // Ensure the first sub-tab of "Base de Datos" is active and populated on load
+            openSubTab('subTabLessonPlans'); // Call with default sub-tab ID, no event object
         };
     </script>
 </body>
