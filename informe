@@ -331,19 +331,20 @@
                         <thead>
                             <tr class="bg-blue-500 text-white">
                                 <th class="py-3 px-4 text-left rounded-tl-lg">Curso</th>
-                                <th class="py-3 px-4 text-left rounded-tr-lg">Estudiantes Lectores</th>
+                                <th class="py-3 px-4 text-left">Estudiantes Lectores</th>
+                                <th class="py-3 px-4 text-left rounded-tr-lg">Estudiantes No Lectores</th> <!-- New Column Header -->
                             </tr>
                         </thead>
                         <tbody>
-                            <tr class="border-b border-gray-200 hover:bg-gray-50"><td>Kinder</td><td>3 (no considerados en el %)</td></tr>
-                            <tr class="border-b border-gray-200 hover:bg-gray-50"><td>1º Básico</td><td>20</td></tr>
-                            <tr class="border-b border-gray-200 hover:bg-gray-50"><td>2º Básico</td><td>29</td></tr>
-                            <tr class="border-b border-gray-200 hover:bg-gray-50"><td>3º Básico</td><td>38</td></tr>
-                            <tr class="border-b border-gray-200 hover:bg-gray-50"><td>4º Básico</td><td>137</td></tr>
-                            <tr class="border-b border-gray-200 hover:bg-gray-50"><td>5° Básico</td><td>37</td></tr>
-                            <tr class="border-b border-gray-200 hover:bg-gray-50"><td>6º Básico</td><td>38</td></tr>
-                            <tr class="border-b border-gray-200 hover:bg-gray-50"><td>7° Básico</td><td>37</td></tr>
-                            <tr class="border-b border-gray-200 hover:bg-gray-50"><td>8° Básico</td><td>28</td></tr>
+                            <tr class="border-b border-gray-200 hover:bg-gray-50"><td>Kinder</td><td>3 (no considerados en el %)</td><td>N/A</td></tr>
+                            <tr class="border-b border-gray-200 hover:bg-gray-50"><td>1º Básico</td><td>20</td><td>18</td></tr>
+                            <tr class="border-b border-gray-200 hover:bg-gray-50"><td>2º Básico</td><td>29</td><td>9</td></tr>
+                            <tr class="border-b border-gray-200 hover:bg-gray-50"><td>3º Básico</td><td>38</td><td>0</td></tr>
+                            <tr class="border-b border-gray-200 hover:bg-gray-50"><td>4º Básico</td><td>38</td><td>0</td></tr> <!-- Corrected value and added non-readers -->
+                            <tr class="border-b border-gray-200 hover:bg-gray-50"><td>5° Básico</td><td>37</td><td>1</td></tr>
+                            <tr class="border-b border-gray-200 hover:bg-gray-50"><td>6º Básico</td><td>38</td><td>0</td></tr>
+                            <tr class="border-b border-gray-200 hover:bg-gray-50"><td>7° Básico</td><td>37</td><td>1</td></tr>
+                            <tr class="border-b border-gray-200 hover:bg-gray-50"><td>8° Básico</td><td>28</td><td>0</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -368,7 +369,7 @@
                     </ul>
                 </div>
                 <div class="card">
-                    <h4 class="text-xl font-medium text-gray-700 mb-3">Total Coordinaciones I Ciclo</h4>
+                    <h4 class="text-xl font-medium text-gray-700 mb-3">Total Coordinaciones Primer Ciclo</h4>
                     <p class="text-gray-600 mb-2"><span class="font-semibold">Total:</span> 87</p>
                     <ul class="list-disc list-inside text-gray-600 space-y-2">
                         <li><span class="font-semibold">Lenguaje:</span> 30</li>
@@ -379,7 +380,7 @@
                     </ul>
                 </div>
                 <div class="card">
-                    <h4 class="text-xl font-medium text-gray-700 mb-3">Total Coordinaciones II Ciclo</h4>
+                    <h4 class="text-xl font-medium text-gray-700 mb-3">Total Coordinaciones Segundo Ciclo</h4>
                     <p class="text-gray-600 mb-2"><span class="font-semibold">Total:</span> 86</p>
                     <ul class="list-disc list-inside text-gray-600 space-y-2">
                         <li><span class="font-semibold">Lenguaje:</span> 20</li>
@@ -520,6 +521,15 @@
             } else if (tabId === 'teamMeetings') {
                 renderCoordinationChart();
             }
+        }
+
+        // Function to normalize strings for robust comparison (handles accents and multiple spaces)
+        function normalizeString(str) {
+            return str.toLowerCase()
+                      .normalize('NFD') // Normalize to NFD (Canonical Decomposition)
+                      .replace(/[\u0300-\u036f]/g, "") // Remove diacritics
+                      .replace(/\s+/g, ' ') // Replace multiple spaces with a single space
+                      .trim();
         }
 
         // Chart for Estudiantes en Riesgo de Repitencia (Bar Chart)
@@ -681,7 +691,7 @@
                             borderRadius: 8
                         },
                         {
-                            label: 'Coordinaciones I Ciclo',
+                            label: 'Coordinaciones Primer Ciclo',
                             data: coordinationData.cicloI,
                             backgroundColor: 'rgba(153, 102, 255, 0.7)',
                             borderColor: 'rgba(153, 102, 255, 1)',
@@ -689,7 +699,7 @@
                             borderRadius: 8
                         },
                         {
-                            label: 'Coordinaciones II Ciclo',
+                            label: 'Coordinaciones Segundo Ciclo',
                             data: coordinationData.cicloII,
                             backgroundColor: 'rgba(255, 159, 64, 0.7)',
                             borderColor: 'rgba(255, 159, 64, 1)',
@@ -771,8 +781,10 @@
             noPersonFoundElement.classList.add('hidden');
             personDetailsElement.innerHTML = ''; // Clear previous details
 
+            const normalizedSearchInput = normalizeString(searchInput);
+
             // Search in critical cases (students)
-            const foundStudent = criticalCases.find(student => student.estudiante.toLowerCase() === searchInput.toLowerCase());
+            const foundStudent = criticalCases.find(student => normalizeString(student.estudiante) === normalizedSearchInput);
             if (foundStudent) {
                 personNameElement.innerText = foundStudent.estudiante;
                 personDetailsElement.innerHTML = `
@@ -788,7 +800,7 @@
             }
 
             // Search in pending lesson plans (teachers)
-            const foundTeacher = pendingLessonPlans.find(teacher => teacher.docente.toLowerCase() === searchInput.toLowerCase());
+            const foundTeacher = pendingLessonPlans.find(teacher => normalizeString(teacher.docente) === normalizedSearchInput);
             if (foundTeacher) {
                 personNameElement.innerText = foundTeacher.docente;
                 personDetailsElement.innerHTML = `
