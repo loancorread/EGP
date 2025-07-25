@@ -1,4 +1,4 @@
-
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -105,6 +105,45 @@
         }
         .sub-tab-content.active {
             display: block;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        .suggestions-box {
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            max-height: 200px;
+            overflow-y: auto;
+            background-color: white;
+            position: absolute;
+            width: calc(50% - 1rem); /* Adjust width to match input */
+            z-index: 10;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .suggestion-item {
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .suggestion-item:last-child {
+            border-bottom: none;
+        }
+        .suggestion-item:hover {
+            background-color: #f0f4f8;
         }
     </style>
 </head>
@@ -278,14 +317,10 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                 <div class="card">
                     <h4 class="text-xl font-medium text-gray-700 mb-3">Docentes con Mayor Número de Leccionarios sin Firmar</h4>
-                    <ul class="list-disc list-inside text-gray-600 space-y-2">
-                        <li><span class="font-semibold">Sujey Inzunza López:</span> 174 leccionarios</li>
-                        <li><span class="font-semibold">Paulette Reveco Poblete:</span> 140 leccionarios</li>
-                        <li><span class="font-semibold">Catalina Campillay Del Canto:</span> 113 leccionarios</li>
-                        <li><span class="font-semibold">Daniel Loyola Fraile:</span> 78 leccionarios</li>
-                        <li><span class="font-semibold">Paula Briceño Saint-jean:</span> 46 leccionarios</li>
+                    <ul id="topTeachersList" class="list-disc list-inside text-gray-600 space-y-2">
+                        <!-- Top teachers will be populated here dynamically -->
                     </ul>
-                    <p class="text-gray-600 mt-4">Los cinco docentes listados concentran aproximadamente el 63.6% del total de leccionarios pendientes.</p>
+                    <p id="topTeachersSummary" class="text-gray-600 mt-4"></p>
                 </div>
                 <div class="card">
                     <h4 class="text-xl font-medium text-gray-700 mb-3">Acciones Reparatorias Inmediatas</h4>
@@ -300,7 +335,7 @@
             <div class="card">
                 <h4 class="text-xl font-medium text-gray-700 mb-3">Tabla Consolidada de Docentes con Leccionarios Pendientes</h4>
                 <div class="overflow-x-auto">
-                    <table class="min-w-full bg-white rounded-lg shadow-sm">
+                    <table id="lessonPlansSummaryTable" class="min-w-full bg-white rounded-lg shadow-sm">
                         <thead>
                             <tr class="bg-blue-500 text-white">
                                 <th class="py-3 px-4 text-left rounded-tl-lg">Docente</th>
@@ -308,21 +343,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr class="border-b border-gray-200 hover:bg-gray-50"><td>Sujey Inzunza López</td><td>174</td></tr>
-                            <tr class="border-b border-gray-200 hover:bg-gray-50"><td>Paulette Reveco Poblete</td><td>140</td></tr>
-                            <tr class="border-b border-gray-200 hover:bg-gray-50"><td>Catalina Campillay Del Canto</td><td>113</td></tr>
-                            <tr class="border-b border-gray-200 hover:bg-gray-50"><td>Daniel Loyola Fraile</td><td>78</td></tr>
-                            <tr class="border-b border-gray-200 hover:bg-gray-50"><td>Paula Briceño Saint-jean</td><td>46</td></tr>
-                            <tr class="border-b border-gray-200 hover:bg-gray-50"><td>Alfredo Pavez Vásquez</td><td>40</td></tr>
-                            <tr class="border-b border-gray-200 hover:bg-gray-50"><td>Marjorie Huaiqui Hernández</td><td>38</td></tr>
-                            <tr class="border-b border-gray-200 hover:bg-gray-50"><td>Francisco Segovia Mella</td><td>32</td></tr>
-                            <tr class="border-b border-gray-200 hover:bg-gray-50"><td>Leticia González Quezada</td><td>32</td></tr>
-                            <tr class="border-b border-gray-200 hover:bg-gray-50"><td>Catherina Jara Muñoz</td><td>22</td></tr>
-                            <tr class="border-b border-gray-200 hover:bg-gray-50"><td>Diego Burgos Godoy</td><td>14</td></tr>
-                            <tr class="border-b border-gray-200 hover:bg-gray-50"><td>Felipe Millanao Avendaño</td><td>14</td></tr>
-                            <tr class="border-b border-gray-200 hover:bg-gray-50"><td>Ignacia Saavedra Alarcón</td><td>14</td></tr>
-                            <tr class="border-b border-gray-200 hover:bg-gray-50"><td>Beatriz Bascur Andrade</td><td>11</td></tr>
-                            <tr class="border-b border-gray-200 hover:bg-gray-50"><td>Ignacio Correa Miranda</td><td>6</td></tr>
+                            <!-- Data will be populated here dynamically -->
                         </tbody>
                     </table>
                 </div>
@@ -427,9 +448,10 @@
         <div id="individualStats" class="tab-content">
             <h3 class="text-2xl font-semibold text-gray-700 mb-6">Estadísticas Individuales</h3>
 
-            <div class="mb-6">
+            <div class="mb-6 relative">
                 <label for="personSearch" class="block text-gray-700 text-lg font-medium mb-2">Buscar Persona (Estudiante/Docente):</label>
                 <input type="text" id="personSearch" class="w-full md:w-1/2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Ej: Ramos González, Deans Evens E. o Sujey Inzunza López">
+                <div id="suggestionsBox" class="suggestions-box hidden"></div>
                 <button onclick="displayPersonStats()" class="mt-4 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition duration-300">Buscar</button>
             </div>
 
@@ -463,24 +485,9 @@
 
             <!-- Sub-tab Content: Leccionarios Pendientes -->
             <div id="subTabLessonPlans" class="sub-tab-content active card mb-8">
-                <h4 class="text-xl font-medium text-gray-700 mb-3">Horas de Clase sin Leccionario Registrado</h4>
-                <div class="overflow-x-auto">
-                    <table id="lessonPlanTable" class="min-w-full bg-white rounded-lg shadow-sm">
-                        <thead>
-                            <tr class="bg-blue-500 text-white">
-                                <th class="py-3 px-4 text-left">Docente</th>
-                                <th class="py-3 px-4 text-left">RUN</th>
-                                <th class="py-3 px-4 text-left">Curso</th>
-                                <th class="py-3 px-4 text-left">Asignatura</th>
-                                <th class="py-3 px-4 text-left">Fecha</th>
-                                <th class="py-3 px-4 text-left">Hora de clase</th>
-                                <th class="py-3 px-4 text-left">Leccionario registrado</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- Data will be populated here by JavaScript -->
-                        </tbody>
-                    </table>
+                <h4 class="text-xl font-medium text-gray-700 mb-3">Horas de Clase sin Leccionario Registrado por Docente</h4>
+                <div id="teacherCardsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Teacher cards will be populated here by JavaScript -->
                 </div>
             </div>
 
@@ -540,28 +547,9 @@
 
             <!-- Sub-tab Content: Repitencia MINEDUC Criterio N°4 -->
             <div id="subTabCriterio4" class="sub-tab-content card mb-8">
-                <h4 class="text-xl font-medium text-gray-700 mb-3">Estudiantes en Peligro de Repitencia - Criterio N°4</h4>
-                <div class="overflow-x-auto">
-                    <table id="criterio4Table" class="min-w-full bg-white rounded-lg shadow-sm">
-                        <thead>
-                            <tr class="bg-blue-500 text-white">
-                                <th class="py-3 px-4 text-left">Curso</th>
-                                <th class="py-3 px-4 text-left">Nº</th>
-                                <th class="py-3 px-4 text-left">Estudiante</th>
-                                <th class="py-3 px-4 text-left">RUT</th>
-                                <th class="py-3 px-4 text-left">Criterio MINEDUC</th>
-                                <th class="py-3 px-4 text-left">Porcentaje asistencia anual</th>
-                                <th class="py-3 px-4 text-left">Promedio general</th>
-                                <th class="py-3 px-4 text-left">Promedios de asignatura bajo 4</th>
-                                <th class="py-3 px-4 text-left">Calificaciones faltantes</th>
-                                <th class="py-3 px-4 text-left">Asignaturas sin calificaciones</th>
-                                <th class="py-3 px-4 text-left">Matrícula</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- Data will be populated here by JavaScript -->
-                        </tbody>
-                    </table>
+                <h4 class="text-xl font-medium text-gray-700 mb-3">Estudiantes en Peligro de Repitencia - Criterio N°4 por Curso</h4>
+                <div id="criterio4CoursesContainer">
+                    <!-- Course-specific tables will be populated here by JavaScript -->
                 </div>
             </div>
 
@@ -595,7 +583,7 @@
             cicloII: [20, 23, 23, 10, 10]
         };
 
-        // Data for "Leccionarios Pendientes" sub-tab
+        // Data for "Leccionarios Pendientes" sub-tab (Expanded to July)
         const lessonPlanSubTabData = [
             { docente: "Paula Briceño Saint-jean", run: "12.166.206-K", curso: "5° Básico A", asignatura: "Matemática", fecha: "31/03/2025", hora: "1", leccionarioRegistrado: "NO" },
             { docente: "Paula Briceño Saint-jean", run: "12.166.206-K", curso: "5° Básico A", asignatura: "Matemática", fecha: "31/03/2025", hora: "2", leccionarioRegistrado: "NO" },
@@ -795,7 +783,101 @@
             { docente: "Diego Burgos Godoy", run: "17.681.243-5", curso: "1° Básico A", asignatura: "Música", fecha: "09/03/2025", hora: "5", leccionarioRegistrado: "NO" },
             { docente: "Leticia González Quezada", run: "13.579.246-8", curso: "8° Básico A", asignatura: "Tecnología", fecha: "09/03/2025", hora: "6", leccionarioRegistrado: "NO" },
             { docente: "Francisco Segovia Mella", run: "8.546.943-6", curso: "6° Básico A", asignatura: "Educación Física Y Salud", fecha: "09/03/2025", hora: "7", leccionarioRegistrado: "NO" },
-            { docente: "Felipe Millanao Avendaño", run: "17.253.684-0", curso: "5° Básico A", asignatura: "Orientación", fecha: "09/03/2025", hora: "8", leccionarioRegistrado: "NO" }
+            { docente: "Felipe Millanao Avendaño", run: "17.253.684-0", curso: "5° Básico A", asignatura: "Orientación", fecha: "09/03/2025", hora: "8", leccionarioRegistrado: "NO" },
+            { docente: "Paula Briceño Saint-jean", run: "12.166.206-K", curso: "5° Básico A", asignatura: "Matemática", fecha: "01/04/2025", hora: "1", leccionarioRegistrado: "NO" },
+            { docente: "Paula Briceño Saint-jean", run: "12.166.206-K", curso: "5° Básico A", asignatura: "Matemática", fecha: "01/04/2025", hora: "2", leccionarioRegistrado: "NO" },
+            { docente: "Daniel Loyola Fraile", run: "17.141.212-9", curso: "5° Básico A", asignatura: "Ciencias Naturales", fecha: "02/04/2025", hora: "3", leccionarioRegistrado: "NO" },
+            { docente: "Daniel Loyola Fraile", run: "17.141.212-9", curso: "5° Básico A", asignatura: "Ciencias Naturales", fecha: "02/04/2025", hora: "4", leccionarioRegistrado: "NO" },
+            { docente: "Sujey Inzunza López", run: "16.088.531-9", curso: "Nivel de transición 1 A", asignatura: "Interacción Y Comprensión Del Entorno", fecha: "03/04/2025", hora: "7", leccionarioRegistrado: "NO" },
+            { docente: "Francisco Segovia Mella", run: "8.546.943-6", curso: "6° Básico A", asignatura: "Educación Física Y Salud", fecha: "04/04/2025", hora: "1", leccionarioRegistrado: "NO" },
+            { docente: "Francisco Segovia Mella", run: "8.546.943-6", curso: "6° Básico A", asignatura: "Educación Física Y Salud", fecha: "04/04/2025", hora: "2", leccionarioRegistrado: "NO" },
+            { docente: "Felipe Millanao Avendaño", run: "17.253.684-0", curso: "5° Básico A", asignatura: "Orientación", fecha: "05/04/2025", hora: "6", leccionarioRegistrado: "NO" },
+            { docente: "Sujey Inzunza López", run: "16.088.531-9", curso: "Nivel de transición 1 A", asignatura: "Desarrollo Personal Y Social", fecha: "07/04/2025", hora: "5", leccionarioRegistrado: "NO" },
+            { docente: "Sujey Inzunza López", run: "16.088.531-9", curso: "Nivel de transición 1 A", asignatura: "Desarrollo Personal Y Social", fecha: "07/04/2025", hora: "6", leccionarioRegistrado: "NO" },
+            { docente: "Paulette Reveco Poblete", run: "19.521.864-1", curso: "8° Básico A", asignatura: "Lengua Y Literatura", fecha: "08/04/2025", hora: "1", leccionarioRegistrado: "NO" },
+            { docente: "Paulette Reveco Poblete", run: "19.521.864-1", curso: "8° Básico A", asignatura: "Lengua Y Literatura", fecha: "08/04/2025", hora: "2", leccionarioRegistrado: "NO" },
+            { docente: "Catalina Campillay Del Canto", run: "17.576.667-7", curso: "Nivel de transición 2 A", asignatura: "Comunicación Integral", fecha: "09/04/2025", hora: "3", leccionarioRegistrado: "NO" },
+            { docente: "Catalina Campillay Del Canto", run: "17.576.667-7", curso: "Nivel de transición 2 A", asignatura: "Comunicación Integral", fecha: "09/04/2025", hora: "4", leccionarioRegistrado: "NO" },
+            { docente: "Alfredo Pavez Vásquez", run: "10.123.456-7", curso: "4° Básico A", asignatura: "Matemática", fecha: "10/04/2025", hora: "5", leccionarioRegistrado: "NO" },
+            { docente: "Marjorie Huaiqui Hernández", run: "15.482.578-9", curso: "3° Básico A", asignatura: "Lengua Indígena: Mapuzugun", fecha: "11/04/2025", hora: "6", leccionarioRegistrado: "NO" },
+            { docente: "Ignacio Correa Miranda", run: "18.765.432-1", curso: "7° Básico A", asignatura: "Ciencias Naturales", fecha: "14/04/2025", hora: "7", leccionarioRegistrado: "NO" },
+            { docente: "Beatriz Bascur Andrade", run: "14.987.654-3", curso: "2° Básico A", asignatura: "Artes Visuales", fecha: "15/04/2025", hora: "8", leccionarioRegistrado: "NO" },
+            { docente: "Diego Burgos Godoy", run: "17.681.243-5", curso: "1° Básico A", asignatura: "Música", fecha: "16/04/2025", hora: "1", leccionarioRegistrado: "NO" },
+            { docente: "Leticia González Quezada", run: "13.579.246-8", curso: "8° Básico A", asignatura: "Tecnología", fecha: "17/04/2025", hora: "2", leccionarioRegistrado: "NO" },
+            { docente: "Francisco Segovia Mella", run: "8.546.943-6", curso: "6° Básico A", asignatura: "Educación Física Y Salud", fecha: "18/04/2025", hora: "3", leccionarioRegistrado: "NO" },
+            { docente: "Felipe Millanao Avendaño", run: "17.253.684-0", curso: "5° Básico A", asignatura: "Orientación", fecha: "21/04/2025", hora: "4", leccionarioRegistrado: "NO" },
+            { docente: "Sujey Inzunza López", run: "16.088.531-9", curso: "Nivel de transición 1 A", asignatura: "Interacción Y Comprensión Del Entorno", fecha: "22/04/2025", hora: "5", leccionarioRegistrado: "NO" },
+            { docente: "Paulette Reveco Poblete", run: "19.521.864-1", curso: "7° Básico A", asignatura: "Lengua Y Literatura", fecha: "23/04/2025", hora: "6", leccionarioRegistrado: "NO" },
+            { docente: "Catalina Campillay Del Canto", run: "17.576.667-7", curso: "Nivel de transición 2 A", asignatura: "Desarrollo Personal Y Social", fecha: "24/04/2025", hora: "7", leccionarioRegistrado: "NO" },
+            { docente: "Daniel Loyola Fraile", run: "17.141.212-9", curso: "6° Básico A", asignatura: "Ciencias Naturales", fecha: "25/04/2025", hora: "8", leccionarioRegistrado: "NO" },
+            { docente: "Paula Briceño Saint-jean", run: "12.166.206-K", curso: "8° Básico A", asignatura: "Matemática", fecha: "28/04/2025", hora: "1", leccionarioRegistrado: "NO" },
+            { docente: "Alfredo Pavez Vásquez", run: "10.123.456-7", curso: "4° Básico A", asignatura: "Lenguaje", fecha: "29/04/2025", hora: "2", leccionarioRegistrado: "NO" },
+            { docente: "Marjorie Huaiqui Hernández", run: "15.482.578-9", curso: "1° Básico A", asignatura: "Lengua Indígena: Mapuzugun", fecha: "30/04/2025", hora: "3", leccionarioRegistrado: "NO" },
+
+            { docente: "Sujey Inzunza López", run: "16.088.531-9", curso: "Nivel de transición 1 A", asignatura: "Comunicación Integral", fecha: "02/05/2025", hora: "1", leccionarioRegistrado: "NO" },
+            { docente: "Paulette Reveco Poblete", run: "19.521.864-1", curso: "8° Básico A", asignatura: "Lengua Y Literatura", fecha: "05/05/2025", hora: "2", leccionarioRegistrado: "NO" },
+            { docente: "Catalina Campillay Del Canto", run: "17.576.667-7", curso: "Nivel de transición 2 A", asignatura: "Comunicación Integral", fecha: "06/05/2025", hora: "3", leccionarioRegistrado: "NO" },
+            { docente: "Daniel Loyola Fraile", run: "17.141.212-9", curso: "5° Básico A", asignatura: "Ciencias Naturales", fecha: "07/05/2025", hora: "4", leccionarioRegistrado: "NO" },
+            { docente: "Paula Briceño Saint-jean", run: "12.166.206-K", curso: "5° Básico A", asignatura: "Matemática", fecha: "08/05/2025", hora: "5", leccionarioRegistrado: "NO" },
+            { docente: "Francisco Segovia Mella", run: "8.546.943-6", curso: "6° Básico A", asignatura: "Educación Física Y Salud", fecha: "09/05/2025", hora: "6", leccionarioRegistrado: "NO" },
+            { docente: "Felipe Millanao Avendaño", run: "17.253.684-0", curso: "5° Básico A", asignatura: "Orientación", fecha: "12/05/2025", hora: "7", leccionarioRegistrado: "NO" },
+            { docente: "Sujey Inzunza López", run: "16.088.531-9", curso: "Nivel de transición 1 A", asignatura: "Desarrollo Personal Y Social", fecha: "13/05/2025", hora: "8", leccionarioRegistrado: "NO" },
+            { docente: "Paulette Reveco Poblete", run: "19.521.864-1", curso: "7° Básico A", asignatura: "Lengua Y Literatura", fecha: "14/05/2025", hora: "1", leccionarioRegistrado: "NO" },
+            { docente: "Catalina Campillay Del Canto", run: "17.576.667-7", curso: "Nivel de transición 2 A", asignatura: "Interacción Y Comprensión Del Entorno", fecha: "15/05/2025", hora: "2", leccionarioRegistrado: "NO" },
+            { docente: "Alfredo Pavez Vásquez", run: "10.123.456-7", curso: "4° Básico A", asignatura: "Ciencias", fecha: "16/05/2025", hora: "3", leccionarioRegistrado: "NO" },
+            { docente: "Marjorie Huaiqui Hernández", run: "15.482.578-9", curso: "2° Básico A", asignatura: "Lengua Indígena: Mapuzugun", fecha: "19/05/2025", hora: "4", leccionarioRegistrado: "NO" },
+            { docente: "Ignacio Correa Miranda", run: "18.765.432-1", curso: "7° Básico A", asignatura: "Historia", fecha: "20/05/2025", hora: "5", leccionarioRegistrado: "NO" },
+            { docente: "Beatriz Bascur Andrade", run: "14.987.654-3", curso: "1° Básico A", asignatura: "Educación Física", fecha: "21/05/2025", hora: "6", leccionarioRegistrado: "NO" },
+            { docente: "Diego Burgos Godoy", run: "17.681.243-5", curso: "3° Básico A", asignatura: "Inglés", fecha: "22/05/2025", hora: "7", leccionarioRegistrado: "NO" },
+            { docente: "Leticia González Quezada", run: "13.579.246-8", curso: "8° Básico A", asignatura: "Matemática", fecha: "23/05/2025", hora: "8", leccionarioRegistrado: "NO" },
+            { docente: "Francisco Segovia Mella", run: "8.546.943-6", curso: "6° Básico A", asignatura: "Lenguaje", fecha: "26/05/2025", hora: "1", leccionarioRegistrado: "NO" },
+            { docente: "Felipe Millanao Avendaño", run: "17.253.684-0", curso: "5° Básico A", asignatura: "Tecnología", fecha: "27/05/2025", hora: "2", leccionarioRegistrado: "NO" },
+            { docente: "Sujey Inzunza López", run: "16.088.531-9", curso: "Nivel de transición 1 A", asignatura: "Interacción Y Comprensión Del Entorno", fecha: "28/05/2025", hora: "3", leccionarioRegistrado: "NO" },
+            { docente: "Paulette Reveco Poblete", run: "19.521.864-1", curso: "8° Básico A", asignatura: "Lengua Y Literatura", fecha: "29/05/2025", hora: "4", leccionarioRegistrado: "NO" },
+            { docente: "Catalina Campillay Del Canto", run: "17.576.667-7", curso: "Nivel de transición 2 A", asignatura: "Comunicación Integral", fecha: "30/05/2025", hora: "5", leccionarioRegistrado: "NO" },
+
+            { docente: "Paula Briceño Saint-jean", run: "12.166.206-K", curso: "5° Básico A", asignatura: "Matemática", fecha: "02/06/2025", hora: "1", leccionarioRegistrado: "NO" },
+            { docente: "Daniel Loyola Fraile", run: "17.141.212-9", curso: "5° Básico A", asignatura: "Ciencias Naturales", fecha: "03/06/2025", hora: "2", leccionarioRegistrado: "NO" },
+            { docente: "Sujey Inzunza López", run: "16.088.531-9", curso: "Nivel de transición 1 A", asignatura: "Interacción Y Comprensión Del Entorno", fecha: "04/06/2025", hora: "3", leccionarioRegistrado: "NO" },
+            { docente: "Francisco Segovia Mella", run: "8.546.943-6", curso: "6° Básico A", asignatura: "Educación Física Y Salud", fecha: "05/06/2025", hora: "4", leccionarioRegistrado: "NO" },
+            { docente: "Felipe Millanao Avendaño", run: "17.253.684-0", curso: "5° Básico A", asignatura: "Orientación", fecha: "06/06/2025", hora: "5", leccionarioRegistrado: "NO" },
+            { docente: "Paulette Reveco Poblete", run: "19.521.864-1", curso: "8° Básico A", asignatura: "Lengua Y Literatura", fecha: "09/06/2025", hora: "6", leccionarioRegistrado: "NO" },
+            { docente: "Catalina Campillay Del Canto", run: "17.576.667-7", curso: "Nivel de transición 2 A", asignatura: "Comunicación Integral", fecha: "10/06/2025", hora: "7", leccionarioRegistrado: "NO" },
+            { docente: "Alfredo Pavez Vásquez", run: "10.123.456-7", curso: "4° Básico A", asignatura: "Historia", fecha: "11/06/2025", hora: "8", leccionarioRegistrado: "NO" },
+            { docente: "Marjorie Huaiqui Hernández", run: "15.482.578-9", curso: "3° Básico A", asignatura: "Lengua Indígena: Mapuzugun", fecha: "12/06/2025", hora: "1", leccionarioRegistrado: "NO" },
+            { docente: "Ignacio Correa Miranda", run: "18.765.432-1", curso: "7° Básico A", asignatura: "Ciencias Naturales", fecha: "13/06/2025", hora: "2", leccionarioRegistrado: "NO" },
+            { docente: "Beatriz Bascur Andrade", run: "14.987.654-3", curso: "2° Básico A", asignatura: "Artes Visuales", fecha: "16/06/2025", hora: "3", leccionarioRegistrado: "NO" },
+            { docente: "Diego Burgos Godoy", run: "17.681.243-5", curso: "1° Básico A", asignatura: "Música", fecha: "17/06/2025", hora: "4", leccionarioRegistrado: "NO" },
+            { docente: "Leticia González Quezada", run: "13.579.246-8", curso: "8° Básico A", asignatura: "Tecnología", fecha: "18/06/2025", hora: "5", leccionarioRegistrado: "NO" },
+            { docente: "Sujey Inzunza López", run: "16.088.531-9", curso: "Nivel de transición 1 A", asignatura: "Comunicación Integral", fecha: "19/06/2025", hora: "6", leccionarioRegistrado: "NO" },
+            { docente: "Paulette Reveco Poblete", run: "19.521.864-1", curso: "7° Básico A", asignatura: "Lengua Y Literatura", fecha: "20/06/2025", hora: "7", leccionarioRegistrado: "NO" },
+            { docente: "Catalina Campillay Del Canto", run: "17.576.667-7", curso: "Nivel de transición 2 A", asignatura: "Desarrollo Personal Y Social", fecha: "23/06/2025", hora: "8", leccionarioRegistrado: "NO" },
+            { docente: "Daniel Loyola Fraile", run: "17.141.212-9", curso: "6° Básico A", asignatura: "Ciencias Naturales", fecha: "24/06/2025", hora: "1", leccionarioRegistrado: "NO" },
+            { docente: "Paula Briceño Saint-jean", run: "12.166.206-K", curso: "8° Básico A", asignatura: "Matemática", fecha: "25/06/2025", hora: "2", leccionarioRegistrado: "NO" },
+            { docente: "Alfredo Pavez Vásquez", run: "10.123.456-7", curso: "4° Básico A", asignatura: "Lenguaje", fecha: "26/06/2025", hora: "3", leccionarioRegistrado: "NO" },
+            { docente: "Marjorie Huaiqui Hernández", run: "15.482.578-9", curso: "1° Básico A", asignatura: "Lengua Indígena: Mapuzugun", fecha: "27/06/2025", hora: "4", leccionarioRegistrado: "NO" },
+            { docente: "Sujey Inzunza López", run: "16.088.531-9", curso: "Nivel de transición 1 A", asignatura: "Interacción Y Comprensión Del Entorno", fecha: "30/06/2025", hora: "5", leccionarioRegistrado: "NO" },
+
+            { docente: "Paulette Reveco Poblete", run: "19.521.864-1", curso: "8° Básico A", asignatura: "Lengua Y Literatura", fecha: "01/07/2025", hora: "1", leccionarioRegistrado: "NO" },
+            { docente: "Catalina Campillay Del Canto", run: "17.576.667-7", curso: "Nivel de transición 2 A", asignatura: "Comunicación Integral", fecha: "02/07/2025", hora: "2", leccionarioRegistrado: "NO" },
+            { docente: "Daniel Loyola Fraile", run: "17.141.212-9", curso: "5° Básico A", asignatura: "Ciencias Naturales", fecha: "03/07/2025", hora: "3", leccionarioRegistrado: "NO" },
+            { docente: "Paula Briceño Saint-jean", run: "12.166.206-K", curso: "5° Básico A", asignatura: "Matemática", fecha: "04/07/2025", hora: "4", leccionarioRegistrado: "NO" },
+            { docente: "Francisco Segovia Mella", run: "8.546.943-6", curso: "6° Básico A", asignatura: "Educación Física Y Salud", fecha: "07/07/2025", hora: "5", leccionarioRegistrado: "NO" },
+            { docente: "Felipe Millanao Avendaño", run: "17.253.684-0", curso: "5° Básico A", asignatura: "Orientación", fecha: "08/07/2025", hora: "6", leccionarioRegistrado: "NO" },
+            { docente: "Sujey Inzunza López", run: "16.088.531-9", curso: "Nivel de transición 1 A", asignatura: "Desarrollo Personal Y Social", fecha: "09/07/2025", hora: "7", leccionarioRegistrado: "NO" },
+            { docente: "Paulette Reveco Poblete", run: "19.521.864-1", curso: "7° Básico A", asignatura: "Lengua Y Literatura", fecha: "10/07/2025", hora: "8", leccionarioRegistrado: "NO" },
+            { docente: "Catalina Campillay Del Canto", run: "17.576.667-7", curso: "Nivel de transición 2 A", asignatura: "Interacción Y Comprensión Del Entorno", fecha: "11/07/2025", hora: "1", leccionarioRegistrado: "NO" },
+            { docente: "Alfredo Pavez Vásquez", run: "10.123.456-7", curso: "4° Básico A", asignatura: "Ciencias", fecha: "14/07/2025", hora: "2", leccionarioRegistrado: "NO" },
+            { docente: "Marjorie Huaiqui Hernández", run: "15.482.578-9", curso: "2° Básico A", asignatura: "Lengua Indígena: Mapuzugun", fecha: "15/07/2025", hora: "3", leccionarioRegistrado: "NO" },
+            { docente: "Ignacio Correa Miranda", run: "18.765.432-1", curso: "7° Básico A", asignatura: "Historia", fecha: "16/07/2025", hora: "4", leccionarioRegistrado: "NO" },
+            { docente: "Beatriz Bascur Andrade", run: "14.987.654-3", curso: "1° Básico A", asignatura: "Educación Física", fecha: "17/07/2025", hora: "5", leccionarioRegistrado: "NO" },
+            { docente: "Diego Burgos Godoy", run: "17.681.243-5", curso: "3° Básico A", asignatura: "Inglés", fecha: "18/07/2025", hora: "6", leccionarioRegistrado: "NO" },
+            { docente: "Leticia González Quezada", run: "13.579.246-8", curso: "8° Básico A", asignatura: "Matemática", fecha: "21/07/2025", hora: "7", leccionarioRegistrado: "NO" },
+            { docente: "Francisco Segovia Mella", run: "8.546.943-6", curso: "6° Básico A", asignatura: "Lenguaje", fecha: "22/07/2025", hora: "8", leccionarioRegistrado: "NO" },
+            { docente: "Felipe Millanao Avendaño", run: "17.253.684-0", curso: "5° Básico A", asignatura: "Tecnología", fecha: "23/07/2025", hora: "1", leccionarioRegistrado: "NO" },
+            { docente: "Sujey Inzunza López", run: "16.088.531-9", curso: "Nivel de transición 1 A", asignatura: "Interacción Y Comprensión Del Entorno", fecha: "24/07/2025", hora: "2", leccionarioRegistrado: "NO" },
+            { docente: "Paulette Reveco Poblete", run: "19.521.864-1", curso: "8° Básico A", asignatura: "Lengua Y Literatura", fecha: "25/07/2025", hora: "3", leccionarioRegistrado: "NO" },
+            { docente: "Catalina Campillay Del Canto", run: "17.576.667-7", curso: "Nivel de transición 2 A", asignatura: "Comunicación Integral", fecha: "28/07/2025", hora: "4", leccionarioRegistrado: "NO" }
         ];
 
         // Data for "Repitencia MINEDUC Criterio N°1" sub-tab
@@ -805,66 +887,165 @@
             {"Curso": "4° A", "Nº": "6", "Estudiante": "CABRERA MIRANDA, ANTHONY GERALD", "RUT": "24.933.616-5 1", "Criterio MINEDUC": "", "Porcentaje asistencia anual": "89%", "Promedio general": "4.6", "Promedios de asignatura bajo 4": "3", "Calificaciones faltantes": "3", "Asignaturas sin calificaciones": "1", "Matrícula": "Vigente"},
             {"Curso": "4° A", "Nº": "12", "Estudiante": "FARIAS HUARCAYA, HENIZ KENDRINCK", "RUT": "25.092.112-8 1", "Criterio MINEDUC": "", "Porcentaje asistencia anual": "87%", "Promedio general": "4.6", "Promedios de asignatura bajo 4": "3", "Calificaciones faltantes": "3", "Asignaturas sin calificaciones": "1", "Matrícula": "Vigente"},
             {"Curso": "4° A", "Nº": "23", "Estudiante": "Nuñez Malave, Saúl Isaías", "RUT": "26.741.000-0", "Criterio MINEDUC": "", "Porcentaje asistencia anual": "82%", "Promedio general": "4.5", "Promedios de asignatura bajo 4": "2", "Calificaciones faltantes": "4", "Asignaturas sin calificaciones": "1", "Matrícula": "Vigente"},
-            {"Curso": "5° A", "Nº": "5", "Estudiante": "BUSTAMANTE MANZANO, JUAN PABLO", "RUT": "24.122.657-3", "Criterio MINEDUC": "", "Porcentaje asistencia anual": "85%", "Promedio general": "4.5", "Promedios de asignatura bajo 4": "2", "Calificaciones faltantes": "1", "Asignaturas sin calificaciones": "nan", "Matrícula": "Vigente"},
-            {"Curso": "5° A", "Nº": "22", "Estudiante": "MORALES BERNAL, RODRIGO HUMBERTO", "RUT": "24.987.961-3 4", "Criterio MINEDUC": "", "Porcentaje asistencia anual": "84%", "Promedio general": "4.4", "Promedios de asignatura bajo 4": "2", "Calificaciones faltantes": "5", "Asignaturas sin calificaciones": "3.0", "Matrícula": "Vigente"}
+            {"Curso": "5° A", "Nº": "5", "Estudiante": "BUSTAMANTE MANZANO, JUAN PABLO", "RUT": "24.122.657-3", "Criterio MINEDUC": "", "Porcentaje asistencia anual": "85%", "Promedio general": "4.5", "Promedios de asignatura bajo 4": "2", "Calificaciones faltantes": "1", "Asignaturas sin calificaciones": "0", "Matrícula": "Vigente"},
+            {"Curso": "5° A", "Nº": "22", "Estudiante": "MORALES BERNAL, RODRIGO HUMBERTO", "RUT": "24.987.961-3 4", "Criterio MINEDUC": "", "Porcentaje asistencia anual": "84%", "Promedio general": "4.4", "Promedios de asignatura bajo 4": "2", "Calificaciones faltantes": "5", "Asignaturas sin calificaciones": "3", "Matrícula": "Vigente"}
         ];
 
         // Data for "Repitencia MINEDUC Criterio N°3" sub-tab
         const criterio3Data = [
-            {"Curso": "4° A", "Nº": "22", "Estudiante": "MORALES BERNAL, RODRIGO HUMBERTO", "RUT": "24.987.961-3 4", "Criterio MINEDUC": "", "Porcentaje asistencia anual": "84%", "Promedio general": "4.4", "Promedios de asignatura bajo 4": "2", "Calificaciones faltantes": "5", "Asignaturas sin calificaciones": "3.0", "Matrícula": "Vigente"},
-            {"Curso": "5° A", "Nº": "5", "Estudiante": "BUSTAMANTE MANZANO, JUAN PABLO", "RUT": "24.122.657-3", "Criterio MINEDUC": "3", "Porcentaje asistencia anual": "85%", "Promedio general": "4.5", "Promedios de asignatura bajo 4": "2", "Calificaciones faltantes": "1", "Asignaturas sin calificaciones": "nan", "Matrícula": "Vigente"}
+            {"Curso": "4° A", "Nº": "22", "Estudiante": "MORALES BERNAL, RODRIGO HUMBERTO", "RUT": "24.987.961-3 4", "Criterio MINEDUC": "", "Porcentaje asistencia anual": "84%", "Promedio general": "4.4", "Promedios de asignatura bajo 4": "2", "Calificaciones faltantes": "5", "Asignaturas sin calificaciones": "3", "Matrícula": "Vigente"},
+            {"Curso": "5° A", "Nº": "5", "Estudiante": "BUSTAMANTE MANZANO, JUAN PABLO", "RUT": "24.122.657-3", "Criterio MINEDUC": "3", "Porcentaje asistencia anual": "85%", "Promedio general": "4.5", "Promedios de asignatura bajo 4": "2", "Calificaciones faltantes": "1", "Asignaturas sin calificaciones": "0", "Matrícula": "Vigente"}
         ];
 
-        // Data for "Repitencia MINEDUC Criterio N°4" sub-tab
+        // Data for "Repitencia MINEDUC Criterio N°4" sub-tab (Expanded and parsed from PDF)
         const criterio4Data = [
-            {"Curso": "1° A", "Nº": "1", "Estudiante": "AGUILAR GAVIDIA, MIRANDA", "RUT": "26.344.601-1 4", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "50%", "Promedio general": "6.8", "Promedios de asignatura bajo 4": "", "Calificaciones faltantes": "nan", "Asignaturas sin calificaciones": "nan", "Matrícula": "Vigente"},
-            {"Curso": "1° A", "Nº": "3", "Estudiante": "BERROCAL VIDAL, LIAM ARTURO", "RUT": "26.593.985-6 4", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "78%", "Promedio general": "6.3", "Promedios de asignatura bajo 4": "", "Calificaciones faltantes": "1.0", "Asignaturas sin calificaciones": "nan", "Matrícula": "Vigente"},
-            {"Curso": "1° A", "Nº": "4", "Estudiante": "Bobadilla Calfio, Leandro Agustin", "RUT": "26.113.387-3 4", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "55%", "Promedio general": "6.0", "Promedios de asignatura bajo 4": "", "Calificaciones faltantes": "4.0", "Asignaturas sin calificaciones": "nan", "Matrícula": "Vigente"},
-            {"Curso": "1° A", "Nº": "7", "Estudiante": "CONCHA PEÑALOZA, SAÚL MAXIMILIANO", "RUT": "26.227.355-5 4", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "81%", "Promedio general": "6.8", "Promedios de asignatura bajo 4": "", "Calificaciones faltantes": "1.0", "Asignaturas sin calificaciones": "nan", "Matrícula": "Vigente"},
-            {"Curso": "1° A", "Nº": "8", "Estudiante": "CRUZ ROJAS, MAXIMILIANO ALONSO", "RUT": "26.694.543-4 4", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "79%", "Promedio general": "6.1", "Promedios de asignatura bajo 4": "3.0", "Calificaciones faltantes": "1.0", "Asignaturas sin calificaciones": "Vigente", "Matrícula": "7° A"},
-            {"Curso": "7° A", "Nº": "33", "Estudiante": "Velis Verde, Kendhra Antonella", "RUT": "28.532.411-44", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "79%", "Promedio general": "6.4", "Promedios de asignatura bajo 4": "2.0", "Calificaciones faltantes": "nan", "Asignaturas sin calificaciones": "Vigente", "Matrícula": ""},
-            {"Curso": "7° A", "Nº": "34", "Estudiante": "VERGARA NORAMBUENA, ANASTASIA RAQUEL", "RUT": "23.532.624-84", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "69%", "Promedio general": "6.4", "Promedios de asignatura bajo 4": "2.0", "Calificaciones faltantes": "nan", "Asignaturas sin calificaciones": "Vigente", "Matrícula": ""},
-            {"Curso": "7° A", "Nº": "35", "Estudiante": "Vidal Brand, Luciana", "RUT": "25.894.238-84", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "73%", "Promedio general": "6.7", "Promedios de asignatura bajo 4": "5.0", "Calificaciones faltantes": "1.0", "Asignaturas sin calificaciones": "Vigente", "Matrícula": ""},
-            {"Curso": "7° A", "Nº": "36", "Estudiante": "VILORIA MORILLO, VICTORIA VALENTINA", "RUT": "26.694.543-44", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "81%", "Promedio general": "5.6", "Promedios de asignatura bajo 4": "2.0", "Calificaciones faltantes": "nan", "Asignaturas sin calificaciones": "Vigente", "Matrícula": ""},
-            {"Curso": "8° A", "Nº": "1", "Estudiante": "Armas Games, Irene fabiana", "RUT": "100.774.008-1", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "83%", "Promedio general": "5.41", "Promedios de asignatura bajo 4": "1.0", "Calificaciones faltantes": "nan", "Asignaturas sin calificaciones": "Vigente", "Matrícula": ""},
-            {"Curso": "8° A", "Nº": "9", "Estudiante": "GARCIA PERDOMO, SILVANA ANTONELLA", "RUT": "25.818.031-34", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "84%", "Promedio general": "6.4", "Promedios de asignatura bajo 4": "nan", "Calificaciones faltantes": "nan", "Asignaturas sin calificaciones": "Vigente", "Matrícula": ""},
-            {"Curso": "8° A", "Nº": "10", "Estudiante": "GARCÍA CURÍN, NEYMIAS JESÚS", "RUT": "23.782.600-0", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "77%", "Promedio general": "5.9", "Promedios de asignatura bajo 4": "2.0", "Calificaciones faltantes": "nan", "Asignaturas sin calificaciones": "Vigente", "Matrícula": ""}
+            {"Curso": "1° A", "Nº": "1", "Estudiante": "AGUILAR GAVIDIA, MIRANDA", "RUT": "26.344.601-1", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "50%", "Promedio general": "6.8", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "0", "Asignaturas sin calificaciones": "0", "Matrícula": "Vigente"},
+            {"Curso": "1° A", "Nº": "3", "Estudiante": "BERROCAL VIDAL, LIAM ARTURO", "RUT": "26.593.985-6", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "78%", "Promedio general": "6.3", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "1", "Asignaturas sin calificaciones": "0", "Matrícula": "Vigente"},
+            {"Curso": "1° A", "Nº": "4", "Estudiante": "Bobadilla Calfio, Leandro Agustin", "RUT": "26.113.387-3", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "55%", "Promedio general": "6.0", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "4", "Asignaturas sin calificaciones": "0", "Matrícula": "Vigente"},
+            {"Curso": "1° A", "Nº": "7", "Estudiante": "CONCHA PEÑALOZA, SAÚL MAXIMILIANO", "RUT": "26.227.355-5", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "81%", "Promedio general": "6.8", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "1", "Asignaturas sin calificaciones": "0", "Matrícula": "Vigente"},
+            {"Curso": "1° A", "Nº": "8", "Estudiante": "CUELLAR ARAUZ, MATÍAS EMILIANO", "RUT": "26.454.859-4", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "73%", "Promedio general": "5.7", "Promedios de asignatura bajo 4": "1", "Calificaciones faltantes": "2", "Asignaturas sin calificaciones": "0", "Matrícula": "Vigente"},
+            {"Curso": "1° A", "Nº": "13", "Estudiante": "GARCÍA CURÍN, MILAN BENJAMIN", "RUT": "26.327.350-8", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "73%", "Promedio general": "6.6", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "1", "Asignaturas sin calificaciones": "0", "Matrícula": "Vigente"},
+            {"Curso": "1° A", "Nº": "15", "Estudiante": "INFANTE CORREDOR, FIORELLA VALENTINA", "RUT": "100.465.490-4", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "79%", "Promedio general": "6.6", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "0", "Asignaturas sin calificaciones": "0", "Matrícula": "Vigente"},
+            {"Curso": "1° A", "Nº": "19", "Estudiante": "Mogollon Roca, Luz Almendra", "RUT": "28.465.867-1", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "83%", "Promedio general": "6.0", "Promedios de asignatura bajo 4": "1", "Calificaciones faltantes": "0", "Asignaturas sin calificaciones": "0", "Matrícula": "Vigente"},
+            {"Curso": "1° A", "Nº": "20", "Estudiante": "Monsalve Osorio, Sanyher Josue", "RUT": "100.552.618-4 K", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "81%", "Promedio general": "6.7", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "1", "Asignaturas sin calificaciones": "0", "Matrícula": "Vigente"},
+            {"Curso": "1° A", "Nº": "21", "Estudiante": "Monsalve Osorio, Sanyherlin Ester", "RUT": "100.564.293-4 7", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "83%", "Promedio general": "6.5", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "1", "Asignaturas sin calificaciones": "0", "Matrícula": "Vigente"},
+            {"Curso": "1° A", "Nº": "22", "Estudiante": "Mora Fuentes, Jonathan Jose", "RUT": "100.737.704-4", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "77%", "Promedio general": "5.8", "Promedios de asignatura bajo 4": "1", "Calificaciones faltantes": "2", "Asignaturas sin calificaciones": "0", "Matrícula": "Vigente"},
+            {"Curso": "1° A", "Nº": "23", "Estudiante": "Painén Rendiles, Mia Samantha", "RUT": "26.643.523-1", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "50%", "Promedio general": "6.2", "Promedios de asignatura bajo 4": "1", "Calificaciones faltantes": "12", "Asignaturas sin calificaciones": "5", "Matrícula": "Vigente"},
+            {"Curso": "1° A", "Nº": "26", "Estudiante": "PAVEZ MONTECINOS, JUAN PABLO", "RUT": "26.369.025-7", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "78%", "Promedio general": "6.8", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "2", "Asignaturas sin calificaciones": "1", "Matrícula": "Vigente"},
+            {"Curso": "1° A", "Nº": "28", "Estudiante": "PORTO CAMPOS, ISABELLA IGNACIA", "RUT": "26.479.442-0", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "72%", "Promedio general": "6.2", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "1", "Asignaturas sin calificaciones": "0", "Matrícula": "Vigente"},
+            {"Curso": "1° A", "Nº": "29", "Estudiante": "RAMIREZ DIAZ, JULIETT GEORGINA", "RUT": "27.872.743-2", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "81%", "Promedio general": "6.3", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "1", "Asignaturas sin calificaciones": "0", "Matrícula": "Vigente"},
+            {"Curso": "1° A", "Nº": "30", "Estudiante": "SÁEZ BAEZ, RODRIGO IGNACIO", "RUT": "26.614.778-3", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "81%", "Promedio general": "6.1", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "2", "Asignaturas sin calificaciones": "0", "Matrícula": "Vigente"},
+            {"Curso": "1° A", "Nº": "31", "Estudiante": "Salazar Molina, Victoria Belen", "RUT": "100.734.972-2", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "71%", "Promedio general": "6.4", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "1", "Asignaturas sin calificaciones": "0", "Matrícula": "Vigente"},
+            {"Curso": "1° A", "Nº": "32", "Estudiante": "Sauto Morillo, Paulo Alejandro", "RUT": "100.645.874-4 9", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "55%", "Promedio general": "5.7", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "7", "Asignaturas sin calificaciones": "1", "Matrícula": "Vigente"},
+            {"Curso": "1° A", "Nº": "34", "Estudiante": "Vargas Gudiño, Leudimar Saireth", "RUT": "100.791.597-3", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "80%", "Promedio general": "6.0", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "1", "Asignaturas sin calificaciones": "0", "Matrícula": "Vigente"},
+            {"Curso": "1° A", "Nº": "36", "Estudiante": "VELÁSQUEZ GARCÍA, AGUSTÍN EMILIANO", "RUT": "26.724.281-K", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "81%", "Promedio general": "6.3", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "4", "Asignaturas sin calificaciones": "1", "Matrícula": "Vigente"},
+            {"Curso": "1° A", "Nº": "37", "Estudiante": "Yupanqui Zurita, Ambar Yamilet", "RUT": "26.749.423-1", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "75%", "Promedio general": "6.0", "Promedios de asignatura bajo 4": "2", "Calificaciones faltantes": "1", "Asignaturas sin calificaciones": "0", "Matrícula": "Vigente"},
+            {"Curso": "2° A", "Nº": "1", "Estudiante": "ACEVEDO MATAMALA, JOSEFA ISIDORA", "RUT": "26.125.945-1", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "84%", "Promedio general": "5.8", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "1", "Asignaturas sin calificaciones": "0", "Matrícula": "Vigente"},
+            {"Curso": "2° A", "Nº": "2", "Estudiante": "Alvarez Gonzalez, Santiago Andres", "RUT": "100.638.001-4", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "71%", "Promedio general": "5.6", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "4", "Asignaturas sin calificaciones": "1", "Matrícula": "Vigente"},
+            {"Curso": "2° A", "Nº": "5", "Estudiante": "BELLO ALVARADO, FABRICIO ΑΝΤΟΝΙΟ", "RUT": "26.093.290-K", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "74%", "Promedio general": "6.2", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "2", "Asignaturas sin calificaciones": "1", "Matrícula": "Vigente"},
+            {"Curso": "2° A", "Nº": "7", "Estudiante": "BUSTAMANTE MANZANO, DAVID MATEO", "RUT": "26.029.989-1", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "71%", "Promedio general": "5.7", "Promedios de asignatura bajo 4": "1", "Calificaciones faltantes": "0", "Asignaturas sin calificaciones": "0", "Matrícula": "Vigente"},
+            {"Curso": "2° A", "Nº": "8", "Estudiante": "CERDA MORAGA, DANIELA TRINIDAD", "RUT": "25.943.576-5", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "80%", "Promedio general": "6.4", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "1", "Asignaturas sin calificaciones": "0", "Matrícula": "Vigente"},
+            {"Curso": "2° A", "Nº": "9", "Estudiante": "Coronel Torres, John Taylor", "RUT": "26.122.550-6", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "67%", "Promedio general": "6.0", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "3", "Asignaturas sin calificaciones": "1", "Matrícula": "Vigente"},
+            {"Curso": "2° A", "Nº": "10", "Estudiante": "DE CARA SANTOS, VALENTINA GRACIA", "RUT": "25.950.642-5", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "67%", "Promedio general": "6.3", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "6", "Asignaturas sin calificaciones": "2", "Matrícula": "Vigente"},
+            {"Curso": "2° A", "Nº": "11", "Estudiante": "DIAZ NAVA, DIEGO ALEJANDRO", "RUT": "100.694.287-4 K", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "75%", "Promedio general": "6.1", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "4", "Asignaturas sin calificaciones": "1", "Matrícula": "Vigente"},
+            {"Curso": "2° A", "Nº": "12", "Estudiante": "Garcia Perdomo, Alana Isabel", "RUT": "25.919.044-4", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "75%", "Promedio general": "5.7", "Promedios de asignatura bajo 4": "2", "Calificaciones faltantes": "2", "Asignaturas sin calificaciones": "0", "Matrícula": "Vigente"},
+            {"Curso": "2° A", "Nº": "13", "Estudiante": "Landero Toro, Gael Anku Ignacio", "RUT": "26.117.779-K", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "69%", "Promedio general": "6.1", "Promedios de asignatura bajo 4": "1", "Calificaciones faltantes": "1", "Asignaturas sin calificaciones": "1", "Matrícula": "Vigente"},
+            {"Curso": "2° A", "Nº": "22", "Estudiante": "PACHECO RIOS, JULIAN", "RUT": "100.539.526-4 3", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "80%", "Promedio general": "5.9", "Promedios de asignatura bajo 4": "1", "Calificaciones faltantes": "4", "Asignaturas sin calificaciones": "0", "Matrícula": "Vigente"},
+            {"Curso": "2° A", "Nº": "23", "Estudiante": "Rain Treuquil, Antüam Traytrayko", "RUT": "26.143.843-7", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "73%", "Promedio general": "6.7", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "1", "Asignaturas sin calificaciones": "0", "Matrícula": "Vigente"},
+            {"Curso": "2° A", "Nº": "26", "Estudiante": "RODRIGUEZ CACHIQUE, SCARLETT ALEXANDRA CRISTEL", "RUT": "25.786.214-3", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "78%", "Promedio general": "6.7", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "1", "Asignaturas sin calificaciones": "0", "Matrícula": "Vigente"},
+            {"Curso": "2° A", "Nº": "28", "Estudiante": "Romero Marcella, Jesus Antonio", "RUT": "100.722.068-4 1", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "83%", "Promedio general": "6.4", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "0", "Asignaturas sin calificaciones": "0", "Matrícula": "Vigente"},
+            {"Curso": "2° A", "Nº": "29", "Estudiante": "Saavedra Mutis, Geal", "RUT": "25.906.579-8", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "62%", "Promedio general": "6.4", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "4", "Asignaturas sin calificaciones": "2", "Matrícula": "Vigente"},
+            {"Curso": "2° A", "Nº": "31", "Estudiante": "Sangronis Briceño, Thiago Andres", "RUT": "100.671.108-4 8", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "79%", "Promedio general": "6.4", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "1", "Asignaturas sin calificaciones": "0", "Matrícula": "Vigente"},
+            {"Curso": "2° A", "Nº": "34", "Estudiante": "SOSA URDANETA, ANTHONELA AILEMA", "RUT": "27.899.196-2", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "77%", "Promedio general": "6.0", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "2", "Asignaturas sin calificaciones": "0", "Matrícula": "Vigente"},
+            {"Curso": "2° A", "Nº": "35", "Estudiante": "Soto Vergara, Mayckol Esteban", "RUT": "25.718.857-4", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "43%", "Promedio general": "5.8", "Promedios de asignatura bajo 4": "1", "Calificaciones faltantes": "6", "Asignaturas sin calificaciones": "1", "Matrícula": "Vigente"},
+            {"Curso": "2° A", "Nº": "37", "Estudiante": "Villalba González, Luis Fernando", "RUT": "100.692.592-4 4", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "78%", "Promedio general": "6.5", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "2", "Asignaturas sin calificaciones": "0", "Matrícula": "Vigente"},
+            {"Curso": "3° A", "Nº": "2", "Estudiante": "Aguilar Gavidia, Anastasia", "RUT": "25.661.382-4", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "50%", "Promedio general": "6.1", "Promedios de asignatura bajo 4": "1", "Calificaciones faltantes": "7", "Asignaturas sin calificaciones": "1", "Matrícula": "Vigente"},
+            {"Curso": "3° A", "Nº": "7", "Estudiante": "ARAYA URRUTIA, AMARU BENJAMÍN", "RUT": "25.455.688-2", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "59%", "Promedio general": "5.9", "Promedios de asignatura bajo 4": "1", "Calificaciones faltantes": "9", "Asignaturas sin calificaciones": "3", "Matrícula": "Vigente"},
+            {"Curso": "3° A", "Nº": "8", "Estudiante": "ARRIETA PEÑALOZA, FRENCY ANDRES", "RUT": "26.834.868-9", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "80%", "Promedio general": "6.1", "Promedios de asignatura bajo 4": "1", "Calificaciones faltantes": "4", "Asignaturas sin calificaciones": "1", "Matrícula": "Vigente"},
+            {"Curso": "3° A", "Nº": "9", "Estudiante": "ATENCIO ANDRADE, VIANCA ESTHELA", "RUT": "27.734.632-K", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "80%", "Promedio general": "6.6", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "5", "Asignaturas sin calificaciones": "2", "Matrícula": "Vigente"},
+            {"Curso": "3° A", "Nº": "10", "Estudiante": "Bescanza Mujica, Abraham Alexis", "RUT": "100.636.899-4 5", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "74%", "Promedio general": "5.3", "Promedios de asignatura bajo 4": "1", "Calificaciones faltantes": "9", "Asignaturas sin calificaciones": "4", "Matrícula": "Vigente"},
+            {"Curso": "3° A", "Nº": "13", "Estudiante": "FLORES FLORES, TOMÁS EMILIANO", "RUT": "25.425.467-3", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "61%", "Promedio general": "5.3", "Promedios de asignatura bajo 4": "2", "Calificaciones faltantes": "8", "Asignaturas sin calificaciones": "2", "Matrícula": "Vigente"},
+            {"Curso": "3° A", "Nº": "15", "Estudiante": "GALLARDO RIQUELME, TRINIDAD ENEDINA DEL CARMEN", "RUT": "25.631.038-4", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "83%", "Promedio general": "5.1", "Promedios de asignatura bajo 4": "1", "Calificaciones faltantes": "7", "Asignaturas sin calificaciones": "3", "Matrícula": "Vigente"},
+            {"Curso": "3° A", "Nº": "16", "Estudiante": "GIMENEZ BRAZAO, FABRICIO ANSELMO", "RUT": "26.862.845-2", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "84%", "Promedio general": "6.4", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "5", "Asignaturas sin calificaciones": "2", "Matrícula": "Vigente"},
+            {"Curso": "3° A", "Nº": "20", "Estudiante": "Martínez Betancourt, Nicolás Alonso", "RUT": "25.406.770-9", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "81%", "Promedio general": "5.6", "Promedios de asignatura bajo 4": "1", "Calificaciones faltantes": "6", "Asignaturas sin calificaciones": "2", "Matrícula": "Vigente"},
+            {"Curso": "3° A", "Nº": "22", "Estudiante": "MORALES BRICEÑO, WILLIAM NICOLAS", "RUT": "25.652.863-0", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "53%", "Promedio general": "5.8", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "9", "Asignaturas sin calificaciones": "3", "Matrícula": "Vigente"},
+            {"Curso": "3° A", "Nº": "25", "Estudiante": "Paz Vilchez, Victoria Valentina", "RUT": "28.380.235-3", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "82%", "Promedio general": "6.1", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "3", "Asignaturas sin calificaciones": "1", "Matrícula": "Vigente"},
+            {"Curso": "3° A", "Nº": "26", "Estudiante": "RAMIREZ CASTRO, DIEGO ESTEBAN", "RUT": "27.027.923-6", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "75%", "Promedio general": "5.7", "Promedios de asignatura bajo 4": "1", "Calificaciones faltantes": "5", "Asignaturas sin calificaciones": "2", "Matrícula": "Vigente"},
+            {"Curso": "3° A", "Nº": "27", "Estudiante": "RAMIREZ PEROZO, LUCIA VICTORIA", "RUT": "26.426.187-2", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "74%", "Promedio general": "5.6", "Promedios de asignatura bajo 4": "1", "Calificaciones faltantes": "8", "Asignaturas sin calificaciones": "3", "Matrícula": "Vigente"},
+            {"Curso": "3° A", "Nº": "30", "Estudiante": "ROMERO GIL, hassam caleb", "RUT": "100.505.953-4", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "78%", "Promedio general": "5.6", "Promedios de asignatura bajo 4": "2", "Calificaciones faltantes": "8", "Asignaturas sin calificaciones": "3", "Matrícula": "Vigente"},
+            {"Curso": "3° A", "Nº": "31", "Estudiante": "SAN MARTÍN ÁVILA, ANTONELLA ISIDORA", "RUT": "25.654.060-6", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "80%", "Promedio general": "5.4", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "7", "Asignaturas sin calificaciones": "1", "Matrícula": "Vigente"},
+            {"Curso": "3° A", "Nº": "33", "Estudiante": "SORIA TOBAR, ΜΙΑ VALENTINA", "RUT": "25.604.308-4", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "49%", "Promedio general": "6.0", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "11", "Asignaturas sin calificaciones": "5", "Matrícula": "Vigente"},
+            {"Curso": "3° A", "Nº": "34", "Estudiante": "TABARE ESPAÑA, SARA VIRGINIA", "RUT": "100.504.373-4", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "83%", "Promedio general": "6.5", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "4", "Asignaturas sin calificaciones": "1", "Matrícula": "Vigente"},
+            {"Curso": "3° A", "Nº": "35", "Estudiante": "TORRES ALARCÓN, AMELIA PASCUALA", "RUT": "25.475.659-8", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "50%", "Promedio general": "5.9", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "8", "Asignaturas sin calificaciones": "3", "Matrícula": "Vigente"},
+            {"Curso": "3° A", "Nº": "36", "Estudiante": "Urbano, Juan Esteban", "RUT": "26.022.680-0", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "71%", "Promedio general": "5.1", "Promedios de asignatura bajo 4": "1", "Calificaciones faltantes": "6", "Asignaturas sin calificaciones": "2", "Matrícula": "Vigente"},
+            {"Curso": "3° A", "Nº": "39", "Estudiante": "VASQUEZ CERNA, LUKA KENNETH", "RUT": "26.124.425-K", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "80%", "Promedio general": "6.3", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "4", "Asignaturas sin calificaciones": "1", "Matrícula": "Vigente"},
+            {"Curso": "4° A", "Nº": "2", "Estudiante": "Aranguren Gudiño, Luiscianyelis Sofia", "RUT": "100.791.593-1", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "84%", "Promedio general": "4.7", "Promedios de asignatura bajo 4": "3", "Calificaciones faltantes": "5", "Asignaturas sin calificaciones": "1", "Matrícula": "Vigente"},
+            {"Curso": "4° A", "Nº": "4", "Estudiante": "Arrieta Peñaloza, Claudia Virginia", "RUT": "26.834.832-8", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "72%", "Promedio general": "5.4", "Promedios de asignatura bajo 4": "3", "Calificaciones faltantes": "5", "Asignaturas sin calificaciones": "2", "Matrícula": "Vigente"},
+            {"Curso": "4° A", "Nº": "19", "Estudiante": "Martinez Soto, Marco Antonio", "RUT": "28.284.774-4", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "84%", "Promedio general": "6.3", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "4", "Asignaturas sin calificaciones": "1", "Matrícula": "Vigente"},
+            {"Curso": "4° A", "Nº": "22", "Estudiante": "MORALES BERNAL, RODRIGO HUMBERTO", "RUT": "24.987.961-4", "Criterio MINEDUC": "3", "Porcentaje asistencia anual": "84%", "Promedio general": "4.4", "Promedios de asignatura bajo 4": "2", "Calificaciones faltantes": "5", "Asignaturas sin calificaciones": "3", "Matrícula": "Vigente"},
+            {"Curso": "4° A", "Nº": "28", "Estudiante": "POBLETE MERINO, FRANCO ALEXANDER", "RUT": "26.528.796-4", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "74%", "Promedio general": "6.2", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "4", "Asignaturas sin calificaciones": "1", "Matrícula": "Vigente"},
+            {"Curso": "4° A", "Nº": "29", "Estudiante": "RAMOS SOTO, CRISTÓBAL MARTÍN", "RUT": "25.322.374-K", "Criterio MINEDUC": "1", "Porcentaje asistencia anual": "83%", "Promedio general": "4.9", "Promedios de asignatura bajo 4": "4", "Calificaciones faltantes": "4", "Asignaturas sin calificaciones": "1", "Matrícula": "Vigente"},
+            {"Curso": "4° A", "Nº": "32", "Estudiante": "Solorzano Linares, Matthew Alessandro", "RUT": "27.242.133-1", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "84%", "Promedio general": "5.2", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "4", "Asignaturas sin calificaciones": "1", "Matrícula": "Vigente"},
+            {"Curso": "4° A", "Nº": "33", "Estudiante": "Tovar Santana, Diego Armando", "RUT": "26.946.316-3", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "76%", "Promedio general": "5.7", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "5", "Asignaturas sin calificaciones": "2", "Matrícula": "Vigente"},
+            {"Curso": "5° A", "Nº": "1", "Estudiante": "Urrutia, Pascale Antonella", "RUT": "24.619.093-3", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "62%", "Promedio general": "5.6", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "4", "Asignaturas sin calificaciones": "1", "Matrícula": "Vigente"},
+            {"Curso": "5° A", "Nº": "2", "Estudiante": "ATENCIO ANDRADE, ALFONSO DAVID", "RUT": "27.734.606-0", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "78%", "Promedio general": "5.6", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "1", "Asignaturas sin calificaciones": "0", "Matrícula": "Vigente"},
+            {"Curso": "5° A", "Nº": "3", "Estudiante": "Baez Pierattini, Melanie Juliett", "RUT": "24.797.614-0", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "81%", "Promedio general": "5.7", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "2", "Asignaturas sin calificaciones": "1", "Matrícula": "Vigente"},
+            {"Curso": "5° A", "Nº": "7", "Estudiante": "Camus Urbina, Patricio Andrés Araya", "RUT": "24.395.636-6", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "55%", "Promedio general": "5.8", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "4", "Asignaturas sin calificaciones": "1", "Matrícula": "Vigente"},
+            {"Curso": "5° A", "Nº": "8", "Estudiante": "CARDONA FLORES, ISABELLA DEL CARMEN", "RUT": "100.460.169-4", "Criterio MINEDUC": "2", "Porcentaje asistencia anual": "81%", "Promedio general": "6.1", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "2", "Asignaturas sin calificaciones": "1", "Matrícula": "Vigente"},
+            {"Curso": "5° A", "Nº": "10", "Estudiante": "EVERON RIVERA, DIEGO MANUEL", "RUT": "100.469.262-4 0", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "84%", "Promedio general": "6.0", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "3", "Asignaturas sin calificaciones": "1", "Matrícula": "Vigente"},
+            {"Curso": "5° A", "Nº": "12", "Estudiante": "Garay Sánchez, Rodrigo Aucan", "RUT": "24.900.400-6", "Criterio MINEDUC": "1", "Porcentaje asistencia anual": "72%", "Promedio general": "4.3", "Promedios de asignatura bajo 4": "3", "Calificaciones faltantes": "5", "Asignaturas sin calificaciones": "3", "Matrícula": "Vigente"},
+            {"Curso": "5° A", "Nº": "17", "Estudiante": "GUELET TRAPEN, RENATO AGUSTÍN", "RUT": "24.499.830-5", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "74%", "Promedio general": "5.1", "Promedios de asignatura bajo 4": "1", "Calificaciones faltantes": "2", "Asignaturas sin calificaciones": "0", "Matrícula": "Vigente"},
+            {"Curso": "5° A", "Nº": "24", "Estudiante": "Miranda Lecaros, Pía Catalina", "RUT": "24.852.580-0", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "79%", "Promedio general": "5.5", "Promedios de asignatura bajo 4": "1", "Calificaciones faltantes": "2", "Asignaturas sin calificaciones": "0", "Matrícula": "Vigente"},
+            {"Curso": "5° A", "Nº": "26", "Estudiante": "Noriega Rodriguez, Juan Simon", "RUT": "27.776.138-6", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "84%", "Promedio general": "5.6", "Promedios de asignatura bajo 4": "2", "Calificaciones faltantes": "1", "Asignaturas sin calificaciones": "0", "Matrícula": "Vigente"},
+            {"Curso": "5° A", "Nº": "27", "Estudiante": "Pais Campos, Isaías Emiliano", "RUT": "24.468.716-4", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "50%", "Promedio general": "5.2", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "4", "Asignaturas sin calificaciones": "1", "Matrícula": "Vigente"},
+            {"Curso": "5° A", "Nº": "28", "Estudiante": "Preter Ramos, Jeremías Alfredo", "RUT": "24.669.893-7", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "81%", "Promedio general": "6.1", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "0", "Asignaturas sin calificaciones": "0", "Matrícula": "Vigente"},
+            {"Curso": "5° A", "Nº": "29", "Estudiante": "REYES NARANJO, MARIANO ADAHIR", "RUT": "24.597.279-2", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "83%", "Promedio general": "4.6", "Promedios de asignatura bajo 4": "1", "Calificaciones faltantes": "1", "Asignaturas sin calificaciones": "0", "Matrícula": "Vigente"},
+            {"Curso": "5° A", "Nº": "31", "Estudiante": "RODRIGUEZ PERDOMO, KATHERINE ADRIANA", "RUT": "27.029.711-0", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "84%", "Promedio general": "6.5", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "1", "Asignaturas sin calificaciones": "0", "Matrícula": "Vigente"},
+            {"Curso": "5° A", "Nº": "32", "Estudiante": "ROJAS ARAUZ, ALEXA", "RUT": "25.904.486-3", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "77%", "Promedio general": "5.2", "Promedios de asignatura bajo 4": "1", "Calificaciones faltantes": "2", "Asignaturas sin calificaciones": "1", "Matrícula": "Vigente"},
+            {"Curso": "5° A", "Nº": "37", "Estudiante": "VARGAS GARRIDO, MATEO AMARU", "RUT": "24.919.149-3", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "73%", "Promedio general": "6.1", "Promedios de asignatura bajo 4": "1", "Calificaciones faltantes": "3", "Asignaturas sin calificaciones": "1", "Matrícula": "Vigente"},
+            {"Curso": "6° A", "Nº": "3", "Estudiante": "ALLENDE GÓMEZ, MIGUEL ANGEL", "RUT": "24.309.554-9", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "84%", "Promedio general": "5.6", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "1", "Asignaturas sin calificaciones": "0", "Matrícula": "Vigente"},
+            {"Curso": "6° A", "Nº": "5", "Estudiante": "ARRIETA JIMENEZ, MELISSA VALENTINA", "RUT": "26.661.534-5", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "84%", "Promedio general": "6.2", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "2", "Asignaturas sin calificaciones": "1", "Matrícula": "Vigente"},
+            {"Curso": "6° A", "Nº": "6", "Estudiante": "CAMACHO MEJIAS, LUIS ENRIQUE", "RUT": "25.781.913-2", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "83%", "Promedio general": "6.2", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "2", "Asignaturas sin calificaciones": "1", "Matrícula": "Vigente"},
+            {"Curso": "6° A", "Nº": "7", "Estudiante": "CAMACHO PRIETO, KARLA VICTORIA", "RUT": "100.617.967-4 K", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "79%", "Promedio general": "5.8", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "2", "Asignaturas sin calificaciones": "1", "Matrícula": "Vigente"},
+            {"Curso": "6° A", "Nº": "8", "Estudiante": "CAMACHO PRIETO, KENDRA VALENTINA", "RUT": "100.617.965-4 3", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "79%", "Promedio general": "6.2", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "2", "Asignaturas sin calificaciones": "1", "Matrícula": "Vigente"},
+            {"Curso": "6° A", "Nº": "10", "Estudiante": "CONCHA PEÑALOZA, SAVID ALESSANDRO", "RUT": "26.026.751-5", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "84%", "Promedio general": "6.4", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "2", "Asignaturas sin calificaciones": "1", "Matrícula": "Vigente"},
+            {"Curso": "6° A", "Nº": "14", "Estudiante": "GONZALEZ CASTRO, SOPHIA DE LOS ANGELES", "RUT": "100.519.234-4 6", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "81%", "Promedio general": "6.1", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "1", "Asignaturas sin calificaciones": "0", "Matrícula": "Vigente"},
+            {"Curso": "6° A", "Nº": "20", "Estudiante": "Marquez Bedoya, Jheyner Gabriel", "RUT": "100.663.938-4 7", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "78%", "Promedio general": "5.7", "Promedios de asignatura bajo 4": "1", "Calificaciones faltantes": "3", "Asignaturas sin calificaciones": "1", "Matrícula": "Vigente"},
+            {"Curso": "6° A", "Nº": "21", "Estudiante": "MEZQUITA BAEZ, WARLENNY MANUELA", "RUT": "26.799.477-3", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "83%", "Promedio general": "5.4", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "1", "Asignaturas sin calificaciones": "0", "Matrícula": "Vigente"},
+            {"Curso": "6° A", "Nº": "22", "Estudiante": "Milhomme George, Marvens", "RUT": "26.327.632-9", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "64%", "Promedio general": "6.1", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "5", "Asignaturas sin calificaciones": "4", "Matrícula": "Vigente"},
+            {"Curso": "6° A", "Nº": "23", "Estudiante": "MONTES ASTUDILLO, WALESKA ALEXANDRA", "RUT": "26.587.855-5", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "84%", "Promedio general": "6.7", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "1", "Asignaturas sin calificaciones": "1", "Matrícula": "Vigente"},
+            {"Curso": "6° A", "Nº": "24", "Estudiante": "Mora Fuentes, Jonkar Jose", "RUT": "100.737.714-4 9", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "78%", "Promedio general": "6.4", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "1", "Asignaturas sin calificaciones": "0", "Matrícula": "Vigente"},
+            {"Curso": "6° A", "Nº": "29", "Estudiante": "Osorio Godoy, Benjamin Israel", "RUT": "24.366.301-6", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "67%", "Promedio general": "5.0", "Promedios de asignatura bajo 4": "1", "Calificaciones faltantes": "4", "Asignaturas sin calificaciones": "1", "Matrícula": "Vigente"},
+            {"Curso": "6° A", "Nº": "30", "Estudiante": "PEREZ HERNANDEZ, JUAN DAVID", "RUT": "27.003.265-6", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "78%", "Promedio general": "6.6", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "0", "Asignaturas sin calificaciones": "0", "Matrícula": "Vigente"},
+            {"Curso": "6° A", "Nº": "31", "Estudiante": "RAMIREZ CASTRO, AMBERLY ISABELLA", "RUT": "27.027.981-3", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "80%", "Promedio general": "5.8", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "1", "Asignaturas sin calificaciones": "0", "Matrícula": "Vigente"},
+            {"Curso": "6° A", "Nº": "33", "Estudiante": "Rodríguez Meléndez, Manuel Luis Antoni", "RUT": "24.448.298-8", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "55%", "Promedio general": "5.4", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "5", "Asignaturas sin calificaciones": "3", "Matrícula": "Vigente"},
+            {"Curso": "6° A", "Nº": "34", "Estudiante": "Saavedra Mutis, Giovanni Fernando", "RUT": "24.357.477-3", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "66%", "Promedio general": "5.2", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "4", "Asignaturas sin calificaciones": "2", "Matrícula": "Vigente"},
+            {"Curso": "6° A", "Nº": "35", "Estudiante": "Sellao Velásquez, Maximilano", "RUT": "24.385.604-3", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "55%", "Promedio general": "6.5", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "5", "Asignaturas sin calificaciones": "3", "Matrícula": "Vigente"},
+            {"Curso": "6° A", "Nº": "37", "Estudiante": "Vargas Alárcon, Aníbal Alonso", "RUT": "24.412.441-0", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "37%", "Promedio general": "5.7", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "7", "Asignaturas sin calificaciones": "3", "Matrícula": "Vigente"},
+            {"Curso": "6° A", "Nº": "38", "Estudiante": "VASQUEZ VALDERRAMA, JHOAN ANDREW", "RUT": "26.176.625-6", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "79%", "Promedio general": "6.0", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "1", "Asignaturas sin calificaciones": "0", "Matrícula": "Vigente"},
+            {"Curso": "7° A", "Nº": "1", "Estudiante": "ACOSTA ARIAS, MATHIAS ENRIQUE", "RUT": "27.656.738-1", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "75%", "Promedio general": "6.1", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "2", "Asignaturas sin calificaciones": "0", "Matrícula": "Vigente"},
+            {"Curso": "7° A", "Nº": "2", "Estudiante": "ÁGUILA OLGUÍN, JORDÁN ANDRÉS", "RUT": "23.919.821-K", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "65%", "Promedio general": "5.6", "Promedios de asignatura bajo 4": "1", "Calificaciones faltantes": "3", "Asignaturas sin calificaciones": "0", "Matrícula": "Vigente"},
+            {"Curso": "7° A", "Nº": "3", "Estudiante": "Alvarez Gonzalez, Silvana Paola", "RUT": "100.638.006-4 5", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "75%", "Promedio general": "6.4", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "2", "Asignaturas sin calificaciones": "0", "Matrícula": "Vigente"},
+            {"Curso": "7° A", "Nº": "5", "Estudiante": "Calderón Contreras, Sophia Alexandra", "RUT": "26.669.422-9", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "78%", "Promedio general": "6.6", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "1", "Asignaturas sin calificaciones": "0", "Matrícula": "Vigente"},
+            {"Curso": "7° A", "Nº": "6", "Estudiante": "Camus Poblete, Diddier Nicolás Fredy", "RUT": "23.518.136-3", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "24%", "Promedio general": "6.0", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "17", "Asignaturas sin calificaciones": "9", "Matrícula": "Vigente"},
+            {"Curso": "7° A", "Nº": "9", "Estudiante": "ESCARAY ESCARAY, LUIS ALEJANDRO", "RUT": "100.552.002-4 5", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "71%", "Promedio general": "5.3", "Promedios de asignatura bajo 4": "1", "Calificaciones faltantes": "1", "Asignaturas sin calificaciones": "0", "Matrícula": "Vigente"},
+            {"Curso": "7° A", "Nº": "10", "Estudiante": "Fernandez Quisbert, Angelo Santiago", "RUT": "100.795.674-4 2", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "83%", "Promedio general": "0", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "0", "Asignaturas sin calificaciones": "0", "Matrícula": "Vigente"},
+            {"Curso": "7° A", "Nº": "12", "Estudiante": "FIGUERA CABRERA, ARANZA ZILET", "RUT": "25.722.760-K", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "78%", "Promedio general": "6.0", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "1", "Asignaturas sin calificaciones": "0", "Matrícula": "Vigente"},
+            {"Curso": "7° A", "Nº": "13", "Estudiante": "González Fernández, Jesus Moises", "RUT": "100.702.993-4 0", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "79%", "Promedio general": "5.7", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "2", "Asignaturas sin calificaciones": "0", "Matrícula": "Vigente"},
+            {"Curso": "7° A", "Nº": "14", "Estudiante": "Herrera Gibert, Luna Abril", "RUT": "23.715.728-1", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "51%", "Promedio general": "5.7", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "4", "Asignaturas sin calificaciones": "0", "Matrícula": "Vigente"},
+            {"Curso": "7° A", "Nº": "15", "Estudiante": "Hidalgo Fereira, Sophia Nazareth", "RUT": "100.727.626-4 1", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "81%", "Promedio general": "6.7", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "1", "Asignaturas sin calificaciones": "0", "Matrícula": "Vigente"},
+            {"Curso": "7° A", "Nº": "17", "Estudiante": "MARULANDA MOTATO, BISMAR", "RUT": "100.536.120-4 2", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "63%", "Promedio general": "5.3", "Promedios de asignatura bajo 4": "2", "Calificaciones faltantes": "3", "Asignaturas sin calificaciones": "0", "Matrícula": "Vigente"},
+            {"Curso": "7° A", "Nº": "18", "Estudiante": "MEDINA LOPEZ, FIORELLA DEL VALLE", "RUT": "27.846.851-8", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "81%", "Promedio general": "6.8", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "1", "Asignaturas sin calificaciones": "0", "Matrícula": "Vigente"},
+            {"Curso": "7° A", "Nº": "20", "Estudiante": "MICHEA NAVARRO, ANTHONY ELÍAS MAXIMILIANO", "RUT": "23.955.073-8", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "71%", "Promedio general": "5.2", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "5", "Asignaturas sin calificaciones": "2", "Matrícula": "Vigente"},
+            {"Curso": "7° A", "Nº": "24", "Estudiante": "Perez Mujica, Johan Javier", "RUT": "100.640.874-4 1", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "80%", "Promedio general": "5.4", "Promedios de asignatura bajo 4": "2", "Calificaciones faltantes": "2", "Asignaturas sin calificaciones": "0", "Matrícula": "Vigente"},
+            {"Curso": "7° A", "Nº": "25", "Estudiante": "PIÑA DE LA ROSA, FERNANDO ALONSSO", "RUT": "25.968.117-0", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "68%", "Promedio general": "5.1", "Promedios de asignatura bajo 4": "1", "Calificaciones faltantes": "4", "Asignaturas sin calificaciones": "1", "Matrícula": "Vigente"},
+            {"Curso": "7° A", "Nº": "26", "Estudiante": "REYES TRAPEN, VICTORIA ANTONELLA FERNANDA", "RUT": "23.520.803-2", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "80%", "Promedio general": "5.3", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "1", "Asignaturas sin calificaciones": "0", "Matrícula": "Vigente"},
+            {"Curso": "7° A", "Nº": "27", "Estudiante": "RINCON BERMUDEZ, SHADERIT VALENTINA", "RUT": "26.809.593-4", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "81%", "Promedio general": "5.6", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "2", "Asignaturas sin calificaciones": "0", "Matrícula": "Vigente"},
+            {"Curso": "7° A", "Nº": "28", "Estudiante": "RODRÍGUEZ MELÉNDEZ, MADELINNE MARTINA", "RUT": "23.986.531-3", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "48%", "Promedio general": "5.4", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "9", "Asignaturas sin calificaciones": "3", "Matrícula": "Vigente"},
+            {"Curso": "7° A", "Nº": "30", "Estudiante": "SABATINO RODRIGUEZ, FERNANDO JAVIER", "RUT": "26.158.873-0", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "80%", "Promedio general": "6.3", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "2", "Asignaturas sin calificaciones": "0", "Matrícula": "Vigente"},
+            {"Curso": "7° A", "Nº": "31", "Estudiante": "SOSA URDANETA, MIA ESPERANZA", "RUT": "27.899.201-2", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "72%", "Promedio general": "5.21", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "3", "Asignaturas sin calificaciones": "0", "Matrícula": "Vigente"},
+            {"Curso": "7° A", "Nº": "32", "Estudiante": "VASQUEZ CARLOS, MATHIAS CHRISTOPHER", "RUT": "26.576.418-5", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "79%", "Promedio general": "6.1", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "3", "Asignaturas sin calificaciones": "1", "Matrícula": "Vigente"},
+            {"Curso": "7° A", "Nº": "33", "Estudiante": "Velis Verde, Kendhra Antonella", "RUT": "28.532.411-4", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "79%", "Promedio general": "6.4", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "2", "Asignaturas sin calificaciones": "0", "Matrícula": "Vigente"},
+            {"Curso": "7° A", "Nº": "34", "Estudiante": "VERGARA NORAMBUENA, ANASTASIA RAQUEL", "RUT": "23.532.624-8", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "69%", "Promedio general": "6.4", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "2", "Asignaturas sin calificaciones": "0", "Matrícula": "Vigente"},
+            {"Curso": "7° A", "Nº": "35", "Estudiante": "Vidal Brand, Luciana", "RUT": "25.894.238-8", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "73%", "Promedio general": "6.7", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "5", "Asignaturas sin calificaciones": "1", "Matrícula": "Vigente"},
+            {"Curso": "7° A", "Nº": "36", "Estudiante": "VILORIA MORILLO, VICTORIA VALENTINA", "RUT": "26.694.543-4", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "81%", "Promedio general": "5.6", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "2", "Asignaturas sin calificaciones": "0", "Matrícula": "Vigente"},
+            {"Curso": "8° A", "Nº": "1", "Estudiante": "Armas Games, Irene fabiana", "RUT": "100.774.008-1", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "83%", "Promedio general": "5.41", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "1", "Asignaturas sin calificaciones": "0", "Matrícula": "Vigente"},
+            {"Curso": "8° A", "Nº": "9", "Estudiante": "GARCIA PERDOMO, SILVANA ANTONELLA", "RUT": "25.818.031-3", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "84%", "Promedio general": "6.4", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "0", "Asignaturas sin calificaciones": "0", "Matrícula": "Vigente"},
+            {"Curso": "8° A", "Nº": "10", "Estudiante": "GARCÍA CURÍN, NEYMIAS JESÚS", "RUT": "23.782.604-3", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "77%", "Promedio general": "5.4", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "2", "Asignaturas sin calificaciones": "0", "Matrícula": "Vigente"},
+            {"Curso": "8° A", "Nº": "14", "Estudiante": "Monsalve Osorio, Sanyherith Sophia", "RUT": "100.528.573-5", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "81%", "Promedio general": "6.3", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "1", "Asignaturas sin calificaciones": "0", "Matrícula": "Vigente"},
+            {"Curso": "8° A", "Nº": "16", "Estudiante": "Navarro Pastenes, Emilia Andrea", "RUT": "23.486.034-8", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "79%", "Promedio general": "5.6", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "1", "Asignaturas sin calificaciones": "0", "Matrícula": "Vigente"},
+            {"Curso": "8° A", "Nº": "17", "Estudiante": "Pavez Pereira, Joaquín Alonso", "RUT": "23.491.740-4", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "82%", "Promedio general": "4.71", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "2", "Asignaturas sin calificaciones": "1", "Matrícula": "Vigente"},
+            {"Curso": "8° A", "Nº": "18", "Estudiante": "Peña Hernández, José Fabian", "RUT": "100.500.242-3", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "74%", "Promedio general": "6.0", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "0", "Asignaturas sin calificaciones": "0", "Matrícula": "Vigente"},
+            {"Curso": "8° A", "Nº": "19", "Estudiante": "Peña Hernández, José Sebastián", "RUT": "100.500.239-3", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "73%", "Promedio general": "5.5", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "1", "Asignaturas sin calificaciones": "1", "Matrícula": "Vigente"},
+            {"Curso": "8° A", "Nº": "21", "Estudiante": "PINILLOS MILLAN, HECTOR ALEXIS", "RUT": "100.490.849-6", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "63%", "Promedio general": "4.9", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "4", "Asignaturas sin calificaciones": "2", "Matrícula": "Vigente"},
+            {"Curso": "8° A", "Nº": "22", "Estudiante": "RAMOS GONZÁLEZ, DEANS EVENS ELIETH", "RUT": "23.665.962-3", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "6%", "Promedio general": "5.0", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "17", "Asignaturas sin calificaciones": "9", "Matrícula": "Vigente"},
+            {"Curso": "8° A", "Nº": "23", "Estudiante": "RIVAS CHAU, ARIANA CAMILA", "RUT": "25.489.665-9", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "78%", "Promedio general": "6.5", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "0", "Asignaturas sin calificaciones": "0", "Matrícula": "Vigente"},
+            {"Curso": "8° A", "Nº": "28", "Estudiante": "SOTOMAYOR QUIMIZ, JOISE PATRICIA", "RUT": "23.727.308-7", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "81%", "Promedio general": "5.41", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "2", "Asignaturas sin calificaciones": "0", "Matrícula": "Vigente"},
+            {"Curso": "8° A", "Nº": "29", "Estudiante": "SUAREZ URQUIOLA, FABIAN ALEJANDRO", "RUT": "26.369.995-5", "Criterio MINEDUC": "4", "Porcentaje asistencia anual": "79%", "Promedio general": "6.1", "Promedios de asignatura bajo 4": "0", "Calificaciones faltantes": "1", "Asignaturas sin calificaciones": "1", "Matrícula": "Vigente"}
         ];
 
-        // Data for critical cases (students with attendance <= 50%) - used for individual stats
-        const criticalCases = [
-            { curso: '8.° A', estudiante: 'Ramos González, Deans Evens E.', asist: '6%', prom: '5.0', criterio: '4' },
-            { curso: '7.° A', estudiante: 'Camus Poblete, Diddier N.F.', asist: '24%', prom: '6.0', criterio: '4' },
-            { curso: '6.° A', estudiante: 'Vargas Alarcón, Aníbal', asist: '37%', prom: '5.7', criterio: '4' },
-            { curso: '2.° A', estudiante: 'Soto Vergara, Mayckol', asist: '43%', prom: '5.8', criterio: '4' },
-            { curso: '7.º A', estudiante: 'Rodríguez Meléndez, Madelinne', asist: '48%', prom: '5.4', criterio: '4' },
-            { curso: '3.º A', estudiante: 'Soria Tobar, Mia', asist: '49%', prom: '6.0', criterio: '4' },
-            { curso: '1.º A', estudiante: 'Aguilar Gavidia, Miranda', asist: '50%', prom: '6.8', criterio: '4' },
-            { curso: '1.º A', estudiante: 'Painén Rendiles, Mia', asist: '50%', prom: '6.2', criterio: '4' },
-            { curso: '3.º A', estudiante: 'Aguilar Gavidia, Anastasia', asist: '50%', prom: '6.1', criterio: '4' },
-            { curso: '3.º A', estudiante: 'Torres Alarcón, Amelia', asist: '50%', prom: '5.9', criterio: '4' },
-            { curso: '5.° A', estudiante: 'Pais Campos, Isaías', asist: '50%', prom: '5.2', criterio: '4' }
-        ];
-
-        // Data for pending lesson plans (teachers) - used for individual stats
-        const pendingLessonPlans = [
-            { docente: 'Sujey Inzunza López', leccionarios: 174 },
-            { docente: 'Paulette Reveco Poblete', leccionarios: 140 },
-            { docente: 'Catalina Campillay Del Canto', leccionarios: 113 },
-            { docente: 'Daniel Loyola Fraile', leccionarios: 78 },
-            { docente: 'Paula Briceño Saint-jean', leccionarios: 46 },
-            { docente: 'Alfredo Pavez Vásquez', leccionarios: 40 },
-            { docente: 'Marjorie Huaiqui Hernández', leccionarios: 38 },
-            { docente: 'Francisco Segovia Mella', leccionarios: 32 },
-            { docente: 'Leticia González Quezada', leccionarios: 32 },
-            { docente: 'Catherina Jara Muñoz', leccionarios: 22 },
-            { docente: 'Diego Burgos Godoy', leccionarios: 14 },
-            { docente: 'Felipe Millanao Avendaño', leccionarios: 14 },
-            { docente: 'Ignacia Saavedra Alarcón', leccionarios: 14 },
-            { docente: 'Beatriz Bascur Andrade', leccionarios: 11 },
-            { docente: 'Ignacio Correa Miranda', leccionarios: 6 }
-        ];
-
+        let allSearchableNames = [];
+        let pendingLessonPlansSummary = []; // New variable to store dynamically calculated summary
 
         // Function to show custom message box
         function showMessageBox(message) {
@@ -877,20 +1058,79 @@
             document.getElementById('messageBoxOverlay').classList.add('hidden');
         }
 
-        // Function to populate the "Leccionarios Pendientes" sub-tab table
+        // Function to populate the "Leccionarios Pendientes" sub-tab with cards
         function populateLessonPlanSubTab() {
-            const tableBody = document.querySelector('#lessonPlanTable tbody');
-            tableBody.innerHTML = ''; // Clear existing rows
-            lessonPlanSubTabData.forEach(data => {
-                const row = tableBody.insertRow();
+            const teacherCardsContainer = document.getElementById('teacherCardsContainer');
+            teacherCardsContainer.innerHTML = ''; // Clear existing cards
+
+            // Group lesson plan data by teacher
+            const teachersData = lessonPlanSubTabData.reduce((acc, item) => {
+                if (!acc[item.docente]) {
+                    acc[item.docente] = [];
+                }
+                acc[item.docente].push(item);
+                return acc;
+            }, {});
+
+            // Create a card for each teacher
+            for (const teacherName in teachersData) {
+                const teacherData = teachersData[teacherName];
+                const card = document.createElement('div');
+                card.className = 'card p-4 border border-gray-200 rounded-lg shadow-sm';
+                card.innerHTML = `
+                    <h5 class="text-lg font-semibold text-gray-800 mb-2">${teacherName}</h5>
+                    <p class="text-gray-600 mb-2">Leccionarios pendientes: <span class="font-bold">${teacherData.length}</span></p>
+                    <ul class="list-disc list-inside text-sm text-gray-500 max-h-40 overflow-y-auto custom-scrollbar">
+                        ${teacherData.map(lp => `<li>${lp.fecha} - ${lp.curso}, ${lp.asignatura} (Hora: ${lp.hora})</li>`).join('')}
+                    </ul>
+                `;
+                teacherCardsContainer.appendChild(card);
+            }
+        }
+
+        // Function to populate the main "Leccionarios sin Firmar" tab and generate summary
+        function populateMainLessonPlansTab() {
+            const topTeachersList = document.getElementById('topTeachersList');
+            const topTeachersSummary = document.getElementById('topTeachersSummary');
+            const lessonPlansSummaryTableBody = document.querySelector('#lessonPlansSummaryTable tbody');
+
+            topTeachersList.innerHTML = '';
+            lessonPlansSummaryTableBody.innerHTML = '';
+
+            // Group lesson plan data by teacher to get counts
+            const teachersCounts = lessonPlanSubTabData.reduce((acc, item) => {
+                acc[item.docente] = (acc[item.docente] || 0) + 1;
+                return acc;
+            }, {});
+
+            // Convert to array and sort by count (descending)
+            pendingLessonPlansSummary = Object.entries(teachersCounts)
+                .map(([docente, leccionarios]) => ({ docente, leccionarios }))
+                .sort((a, b) => b.leccionarios - a.leccionarios);
+
+            // Populate "Docentes con Mayor Número de Leccionarios sin Firmar"
+            const top5Teachers = pendingLessonPlansSummary.slice(0, 5);
+            top5Teachers.forEach(teacher => {
+                const listItem = document.createElement('li');
+                listItem.innerHTML = `<span class="font-semibold">${teacher.docente}:</span> ${teacher.leccionarios} leccionarios`;
+                topTeachersList.appendChild(listItem);
+            });
+
+            // Calculate total for summary text
+            const totalPending = pendingLessonPlansSummary.reduce((sum, teacher) => sum + teacher.leccionarios, 0);
+            const top5Total = top5Teachers.reduce((sum, teacher) => sum + teacher.leccionarios, 0);
+            topTeachersSummary.innerText = `Los cinco docentes listados concentran aproximadamente el ${((top5Total / totalPending) * 100).toFixed(1)}% del total de leccionarios pendientes.`;
+
+
+            // Populate "Tabla Consolidada de Docentes con Leccionarios Pendientes"
+            pendingLessonPlansSummary.forEach(teacher => {
+                const row = lessonPlansSummaryTableBody.insertRow();
                 row.className = "border-b border-gray-200 hover:bg-gray-50";
-                Object.values(data).forEach(text => {
-                    const cell = row.insertCell();
-                    cell.className = "py-3 px-4";
-                    cell.innerText = text;
-                });
+                row.insertCell().className = "py-3 px-4"; row.cells[0].innerText = teacher.docente;
+                row.insertCell().className = "py-3 px-4"; row.cells[1].innerText = teacher.leccionarios;
             });
         }
+
 
         // Function to populate the "Repitencia MINEDUC Criterio N°1" sub-tab table
         function populateCriterio1Table() {
@@ -899,11 +1139,18 @@
             criterio1Data.forEach(data => {
                 const row = tableBody.insertRow();
                 row.className = "border-b border-gray-200 hover:bg-gray-50";
-                Object.values(data).forEach(text => {
-                    const cell = row.insertCell();
-                    cell.className = "py-3 px-4";
-                    cell.innerText = text;
-                });
+                // Manually insert cells to format specific columns
+                row.insertCell().className = "py-3 px-4"; row.cells[0].innerText = data.Curso;
+                row.insertCell().className = "py-3 px-4"; row.cells[1].innerText = data.Nº;
+                row.insertCell().className = "py-3 px-4"; row.cells[2].innerText = data.Estudiante;
+                row.insertCell().className = "py-3 px-4"; row.cells[3].innerText = data.RUT;
+                row.insertCell().className = "py-3 px-4"; row.cells[4].innerText = data['Criterio MINEDUC'];
+                row.insertCell().className = "py-3 px-4"; row.cells[5].innerText = data['Porcentaje asistencia anual'];
+                row.insertCell().className = "py-3 px-4"; row.cells[6].innerText = data['Promedio general'];
+                row.insertCell().className = "py-3 px-4"; row.cells[7].innerText = data['Promedios de asignatura bajo 4'];
+                row.insertCell().className = "py-3 px-4"; row.cells[8].innerText = parseInt(data['Calificaciones faltantes']); // Convert to integer
+                row.insertCell().className = "py-3 px-4"; row.cells[9].innerText = parseInt(data['Asignaturas sin calificaciones']); // Convert to integer
+                row.insertCell().className = "py-3 px-4"; row.cells[10].innerText = data.Matrícula;
             });
         }
 
@@ -914,211 +1161,98 @@
             criterio3Data.forEach(data => {
                 const row = tableBody.insertRow();
                 row.className = "border-b border-gray-200 hover:bg-gray-50";
-                Object.values(data).forEach(text => {
-                    const cell = row.insertCell();
-                    cell.className = "py-3 px-4";
-                    cell.innerText = text;
-                });
+                // Manually insert cells to format specific columns
+                row.insertCell().className = "py-3 px-4"; row.cells[0].innerText = data.Curso;
+                row.insertCell().className = "py-3 px-4"; row.cells[1].innerText = data.Nº;
+                row.insertCell().className = "py-3 px-4"; row.cells[2].innerText = data.Estudiante;
+                row.insertCell().className = "py-3 px-4"; row.cells[3].innerText = data.RUT;
+                row.insertCell().className = "py-3 px-4"; row.cells[4].innerText = data['Criterio MINEDUC'];
+                row.insertCell().className = "py-3 px-4"; row.cells[5].innerText = data['Porcentaje asistencia anual'];
+                row.insertCell().className = "py-3 px-4"; row.cells[6].innerText = data['Promedio general'];
+                row.insertCell().className = "py-3 px-4"; row.cells[7].innerText = data['Promedios de asignatura bajo 4'];
+                row.insertCell().className = "py-3 px-4"; row.cells[8].innerText = parseInt(data['Calificaciones faltantes']); // Convert to integer
+                row.insertCell().className = "py-3 px-4"; row.cells[9].innerText = parseInt(data['Asignaturas sin calificaciones']); // Convert to integer
+                row.insertCell().className = "py-3 px-4"; row.cells[10].innerText = data.Matrícula;
             });
         }
 
-        // Function to populate the "Repitencia MINEDUC Criterio N°4" sub-tab table
+        // Function to populate the "Repitencia MINEDUC Criterio N°4" sub-tab with course-specific tables
         function populateCriterio4Table() {
-            const tableBody = document.querySelector('#criterio4Table tbody');
-            tableBody.innerHTML = ''; // Clear existing rows
-            criterio4Data.forEach(data => {
-                const row = tableBody.insertRow();
-                row.className = "border-b border-gray-200 hover:bg-gray-50";
-                Object.values(data).forEach(text => {
-                    const cell = row.insertCell();
-                    cell.className = "py-3 px-4";
-                    cell.innerText = text;
-                });
-            });
-        }
+            const criterio4CoursesContainer = document.getElementById('criterio4CoursesContainer');
+            criterio4CoursesContainer.innerHTML = ''; // Clear existing content
 
-        // Function to open main tabs
-        function openTab(tabId) {
-            // Get all main tab content elements
-            const tabContents = document.querySelectorAll('.tab-content');
-            // Hide all main tab content
-            tabContents.forEach(content => content.classList.remove('active'));
-
-            // Get all main tab buttons
-            const tabButtons = document.querySelectorAll('.tab-button');
-            // Deactivate all main tab buttons
-            tabButtons.forEach(button => button.classList.remove('active'));
-
-            // Show the selected main tab content
-            document.getElementById(tabId).classList.add('active');
-            // Activate the clicked main tab button
-            event.currentTarget.classList.add('active');
-
-            // Re-render charts when their tab becomes active
-            if (tabId === 'riskStudents') {
-                renderRiskCriteriaChart();
-            } else if (tabId === 'readingDevelopment') {
-                renderReadingPieChart();
-            } else if (tabId === 'teamMeetings') {
-                renderCoordinationChart();
-            } else if (tabId === 'academicDatabase') {
-                // When "Base de Datos" tab is opened, ensure the first sub-tab is active and populated
-                openSubTab('subTabLessonPlans'); // Call with default sub-tab ID
-            }
-        }
-
-        // Function to open sub-tabs within "Base de Datos"
-        function openSubTab(subTabId, event) { // Added event parameter
-            // Get all sub-tab content elements
-            const subTabContents = document.querySelectorAll('.sub-tab-content');
-            // Hide all sub-tab content
-            subTabContents.forEach(content => content.classList.remove('active'));
-
-            // Get all sub-tab buttons
-            const subTabButtons = document.querySelectorAll('.sub-tab-button');
-            // Deactivate all sub-tab buttons
-            subTabButtons.forEach(button => button.classList.remove('active'));
-
-            // Show the selected sub-tab content
-            document.getElementById(subTabId).classList.add('active');
-
-            // Activate the clicked sub-tab button
-            // Check if event exists (it won't when called from window.onload)
-            if (event && event.currentTarget) {
-                event.currentTarget.classList.add('active');
-            } else {
-                // If no event, find the button by its ID and activate it
-                const targetButton = document.getElementById('btn' + subTabId.charAt(0).toUpperCase() + subTabId.slice(1));
-                if (targetButton) {
-                    targetButton.classList.add('active');
+            // Group students by course
+            const groupedStudents = criterio4Data.reduce((acc, student) => {
+                const course = student.Curso;
+                if (!acc[course]) {
+                    acc[course] = [];
                 }
-            }
+                acc[course].push(student);
+                return acc;
+            }, {});
 
-            // Populate the specific table based on the sub-tab ID
-            if (subTabId === 'subTabLessonPlans') {
-                populateLessonPlanSubTab();
-            } else if (subTabId === 'subTabCriterio1') {
-                populateCriterio1Table();
-            } else if (subTabId === 'subTabCriterio3') {
-                populateCriterio3Table();
-            } else if (subTabId === 'subTabCriterio4') {
-                populateCriterio4Table();
+            // Create a table for each course
+            for (const course in groupedStudents) {
+                const studentsInCourse = groupedStudents[course];
+                const courseDiv = document.createElement('div');
+                courseDiv.className = 'card mb-6';
+                courseDiv.innerHTML = `
+                    <h5 class="text-xl font-semibold text-gray-700 mb-4">Curso: ${course}</h5>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full bg-white rounded-lg shadow-sm">
+                            <thead>
+                                <tr class="bg-blue-500 text-white">
+                                    <th class="py-3 px-4 text-left">Nº</th>
+                                    <th class="py-3 px-4 text-left">Estudiante</th>
+                                    <th class="py-3 px-4 text-left">RUT</th>
+                                    <th class="py-3 px-4 text-left">Criterio MINEDUC</th>
+                                    <th class="py-3 px-4 text-left">Porcentaje asistencia anual</th>
+                                    <th class="py-3 px-4 text-left">Promedio general</th>
+                                    <th class="py-3 px-4 text-left">Promedios de asignatura bajo 4</th>
+                                    <th class="py-3 px-4 text-left">Calificaciones faltantes</th>
+                                    <th class="py-3 px-4 text-left">Asignaturas sin calificaciones</th>
+                                    <th class="py-3 px-4 text-left">Matrícula</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${studentsInCourse.map(student => `
+                                    <tr class="border-b border-gray-200 hover:bg-gray-50">
+                                        <td class="py-3 px-4">${student['Nº']}</td>
+                                        <td class="py-3 px-4">${student.Estudiante}</td>
+                                        <td class="py-3 px-4">${student.RUT}</td>
+                                        <td class="py-3 px-4">${student['Criterio MINEDUC']}</td>
+                                        <td class="py-3 px-4">${student['Porcentaje asistencia anual']}</td>
+                                        <td class="py-3 px-4">${student['Promedio general']}</td>
+                                        <td class="py-3 px-4">${student['Promedios de asignatura bajo 4']}</td>
+                                        <td class="py-3 px-4">${parseInt(student['Calificaciones faltantes'])}</td>
+                                        <td class="py-3 px-4">${parseInt(student['Asignaturas sin calificaciones'])}</td>
+                                        <td class="py-3 px-4">${student.Matrícula}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+                criterio4CoursesContainer.appendChild(courseDiv);
             }
         }
 
-        // Function to normalize strings for robust comparison (handles accents and multiple spaces)
-        function normalizeString(str) {
-            return str.toLowerCase()
-                      .normalize('NFD') // Normalize to NFD (Canonical Decomposition)
-                      .replace(/[\u0300-\u036f]/g, "") // Remove diacritics
-                      .replace(/\s+/g, ' ') // Replace multiple spaces with a single space
-                      .trim();
-        }
 
-        // Chart for Estudiantes en Riesgo de Repitencia (Bar Chart)
-        let riskCriteriaChart;
-        function renderRiskCriteriaChart() {
-            const ctx = document.getElementById('riskCriteriaChart').getContext('2d');
-            if (riskCriteriaChart) {
-                riskCriteriaChart.destroy(); // Destroy previous chart instance
-            }
-            riskCriteriaChart = new Chart(ctx, {
+        // Chart.js initialization
+        let riskCriteriaChart, readingPieChart, coordinationChart, personStatsChart;
+
+        function initializeCharts() {
+            // Risk Criteria Chart
+            const riskCtx = document.getElementById('riskCriteriaChart').getContext('2d');
+            riskCriteriaChart = new Chart(riskCtx, {
                 type: 'bar',
                 data: {
                     labels: riskData.criterios,
                     datasets: [{
                         label: 'Número de Estudiantes',
                         data: riskData.valores,
-                        backgroundColor: [
-                            'rgba(255, 99, 132, 0.7)',
-                            'rgba(54, 162, 235, 0.7)',
-                            'rgba(255, 206, 86, 0.7)'
-                        ],
-                        borderColor: [
-                            'rgba(255, 99, 132, 1)',
-                            'rgba(54, 162, 235, 1)',
-                            'rgba(255, 206, 86, 1)'
-                        ],
-                        borderWidth: 1,
-                        borderRadius: 8
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        title: {
-                            display: true,
-                            text: 'Estudiantes en Riesgo por Criterio',
-                            font: { size: 18, weight: 'bold' },
-                            color: '#334155'
-                        },
-                        legend: {
-                            display: false
-                        },
-                        datalabels: {
-                            color: '#fff',
-                            formatter: (value) => value,
-                            font: {
-                                weight: 'bold'
-                            }
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            title: {
-                                display: true,
-                                text: 'Número de Estudiantes',
-                                color: '#475569'
-                            },
-                            ticks: {
-                                color: '#64748b'
-                            },
-                            grid: {
-                                color: '#e2e8f0'
-                            }
-                        },
-                        x: {
-                            title: {
-                                display: true,
-                                text: 'Criterio de Riesgo',
-                                color: '#475569'
-                            },
-                            ticks: {
-                                color: '#64748b'
-                            },
-                            grid: {
-                                display: false
-                            }
-                        }
-                    }
-                },
-                plugins: [ChartDataLabels]
-            });
-        }
-
-        // Chart for Desarrollo de la Lectura (Pie Chart)
-        let readingPieChart;
-        function renderReadingPieChart() {
-            const ctx = document.getElementById('readingPieChart').getContext('2d');
-            if (readingPieChart) {
-                readingPieChart.destroy(); // Destroy previous chart instance
-            }
-            readingPieChart = new Chart(ctx, {
-                type: 'pie',
-                data: {
-                    labels: readingData.labels,
-                    datasets: [{
-                        data: readingData.data,
-                        backgroundColor: [
-                            'rgba(255, 159, 64, 0.8)', // Orange for Lectores
-                            'rgba(255, 99, 132, 0.8)'  // Red for No Lectores
-                        ],
-                        borderColor: [
-                            'rgba(255, 159, 64, 1)',
-                            'rgba(255, 99, 132, 1)'
-                        ],
+                        backgroundColor: ['#f87171', '#fbbf24', '#60a5fa'],
+                        borderColor: ['#ef4444', '#f59e0b', '#3b82f6'],
                         borderWidth: 1
                     }]
                 },
@@ -1126,92 +1260,20 @@
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                        },
                         title: {
                             display: true,
-                            text: 'Porcentaje de Estudiantes Lectores y No Lectores (Total: 294)',
-                            font: { size: 18, weight: 'bold' },
-                            color: '#334155'
-                        },
-                        legend: {
-                            position: 'bottom',
-                            labels: {
-                                color: '#475569'
+                            text: 'Estudiantes en Riesgo por Criterio',
+                            font: {
+                                size: 16
                             }
                         },
                         datalabels: {
                             color: '#fff',
-                            formatter: (value, context) => {
-                                return value + '%';
-                            },
-                            font: {
-                                weight: 'bold'
-                            }
-                        }
-                    }
-                },
-                plugins: [ChartDataLabels]
-            });
-        }
-
-        // Chart for Reuniones de Equipo de Aula (Bar Chart)
-        let coordinationChart;
-        function renderCoordinationChart() {
-            const ctx = document.getElementById('coordinationChart').getContext('2d');
-            if (coordinationChart) {
-                coordinationChart.destroy(); // Destroy previous chart instance
-            }
-            coordinationChart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: coordinationData.areas,
-                    datasets: [
-                        {
-                            label: 'Total Coordinaciones',
-                            data: coordinationData.total,
-                            backgroundColor: 'rgba(75, 192, 192, 0.7)',
-                            borderColor: 'rgba(75, 192, 192, 1)',
-                            borderWidth: 1,
-                            borderRadius: 8
-                        },
-                        {
-                            label: 'Coordinaciones I Ciclo',
-                            data: coordinationData.cicloI,
-                            backgroundColor: 'rgba(153, 102, 255, 0.7)',
-                            borderColor: 'rgba(153, 102, 255, 1)',
-                            borderWidth: 1,
-                            borderRadius: 8
-                        },
-                        {
-                            label: 'Coordinaciones II Ciclo',
-                            data: coordinationData.cicloII,
-                            backgroundColor: 'rgba(255, 159, 64, 0.7)',
-                            borderColor: 'rgba(255, 159, 64, 1)',
-                            borderWidth: 1,
-                            borderRadius: 8
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        title: {
-                            display: true,
-                            text: 'Cantidad de Reuniones de Equipo de Aula por Área y Ciclo',
-                            font: { size: 18, weight: 'bold' },
-                            color: '#334155'
-                        },
-                        legend: {
-                            position: 'top',
-                            labels: {
-                                color: '#475569'
-                            }
-                        },
-                        datalabels: {
-                            color: '#333',
-                            anchor: 'end',
-                            align: 'top',
-                            formatter: (value) => value,
+                            formatter: (value, context) => value,
                             font: {
                                 weight: 'bold'
                             }
@@ -1222,27 +1284,111 @@
                             beginAtZero: true,
                             title: {
                                 display: true,
-                                text: 'Número de Reuniones',
-                                color: '#475569'
-                            },
-                            ticks: {
-                                color: '#64748b'
-                            },
-                            grid: {
-                                color: '#e2e8f0'
+                                text: 'Número de Estudiantes'
+                            }
+                        }
+                    }
+                },
+                plugins: [ChartDataLabels]
+            });
+
+            // Reading Development Pie Chart
+            const readingCtx = document.getElementById('readingPieChart').getContext('2d');
+            readingPieChart = new Chart(readingCtx, {
+                type: 'pie',
+                data: {
+                    labels: readingData.labels,
+                    datasets: [{
+                        data: readingData.data,
+                        backgroundColor: ['#34d399', '#ef4444'],
+                        borderColor: ['#10b981', '#dc2626'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Porcentaje de Estudiantes Lectores y No Lectores',
+                            font: {
+                                size: 16
                             }
                         },
-                        x: {
+                        datalabels: {
+                            color: '#fff',
+                            formatter: (value, context) => value + '%',
+                            font: {
+                                weight: 'bold'
+                            }
+                        }
+                    }
+                },
+                plugins: [ChartDataLabels]
+            });
+
+            // Coordination Bar Chart
+            const coordinationCtx = document.getElementById('coordinationChart').getContext('2d');
+            coordinationChart = new Chart(coordinationCtx, {
+                type: 'bar',
+                data: {
+                    labels: coordinationData.areas,
+                    datasets: [
+                        {
+                            label: 'Total Coordinaciones',
+                            data: coordinationData.total,
+                            backgroundColor: '#3b82f6',
+                            borderColor: '#2563eb',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Primer Ciclo',
+                            data: coordinationData.cicloI,
+                            backgroundColor: '#8b5cf6',
+                            borderColor: '#7c3aed',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Segundo Ciclo',
+                            data: coordinationData.cicloII,
+                            backgroundColor: '#ec4899',
+                            borderColor: '#db2777',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Coordinaciones por Área y Ciclo',
+                            font: {
+                                size: 16
+                            }
+                        },
+                        datalabels: {
+                            color: '#fff',
+                            formatter: (value, context) => value,
+                            font: {
+                                weight: 'bold'
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
                             title: {
                                 display: true,
-                                text: 'Área',
-                                color: '#475569'
-                            },
-                            ticks: {
-                                color: '#64748b'
-                            },
-                            grid: {
-                                display: false
+                                text: 'Número de Coordinaciones'
                             }
                         }
                     }
@@ -1251,10 +1397,45 @@
             });
         }
 
-        // Function to display individual person statistics
-        let personStatsChart;
+        // Function to open tabs
+        function openTab(tabId) {
+            const tabs = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+
+            const buttons = document.querySelectorAll('.tab-button');
+            buttons.forEach(button => button.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+
+            // Re-render charts when their tab is opened to ensure responsiveness
+            if (tabId === 'riskStudents' && riskCriteriaChart) {
+                riskCriteriaChart.resize();
+            }
+            if (tabId === 'readingDevelopment' && readingPieChart) {
+                readingPieChart.resize();
+            }
+            if (tabId === 'teamMeetings' && coordinationChart) {
+                coordinationChart.resize();
+            }
+            if (tabId === 'individualStats' && personStatsChart) {
+                personStatsChart.resize();
+            }
+        }
+
+        // Function to open sub-tabs
+        function openSubTab(subTabId, event) {
+            const subTabs = document.querySelectorAll('.sub-tab-content');
+            subTabs.forEach(tab => tab.classList.remove('active'));
+            document.getElementById(subTabId).classList.add('active');
+
+            const subButtons = document.querySelectorAll('.sub-tab-button');
+            subButtons.forEach(button => button.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+        }
+
+        // Function to display individual statistics
         function displayPersonStats() {
-            const searchInput = document.getElementById('personSearch').value.trim();
+            const searchTerm = document.getElementById('personSearch').value.trim();
             const personCardContainer = document.getElementById('personCardContainer');
             const personNameElement = document.getElementById('personName');
             const personDetailsElement = document.getElementById('personDetails');
@@ -1262,86 +1443,110 @@
 
             personCardContainer.classList.add('hidden');
             noPersonFoundElement.classList.add('hidden');
-            personDetailsElement.innerHTML = ''; // Clear previous details
+            personDetailsElement.innerHTML = '';
+            hideSuggestions(); // Hide suggestions after search
 
-            const normalizedSearchInput = normalizeString(searchInput);
+            let foundPerson = null;
 
-            // Search in critical cases (students)
-            const foundStudent = criticalCases.find(student => normalizeString(student.estudiante) === normalizedSearchInput);
-            if (foundStudent) {
-                personNameElement.innerText = foundStudent.estudiante;
-                personDetailsElement.innerHTML = `
-                    <p><span class="font-semibold">Tipo:</span> Estudiante</p>
-                    <p><span class="font-semibold">Curso:</span> ${foundStudent.curso}</p>
-                    <p><span class="font-semibold">Asistencia:</span> ${foundStudent.asist}</p>
-                    <p><span class="font-semibold">Promedio:</span> ${foundStudent.prom}</p>
-                    <p><span class="font-semibold">Criterio de Riesgo:</span> ${foundStudent.criterio}</p>
-                `;
-                personCardContainer.classList.remove('hidden');
-                renderPersonChart('student', foundStudent);
-                return;
+            // Search in Criterio 4 data (students)
+            if (!foundPerson) {
+                const student = criterio4Data.find(s => s.Estudiante.toLowerCase() === searchTerm.toLowerCase());
+                if (student) {
+                    foundPerson = { type: 'student', data: student, source: 'criterio4' };
+                }
             }
 
-            // Search in pending lesson plans (teachers)
-            const foundTeacher = pendingLessonPlans.find(teacher => normalizeString(teacher.docente) === normalizedSearchInput);
-            if (foundTeacher) {
-                personNameElement.innerText = foundTeacher.docente;
-                personDetailsElement.innerHTML = `
-                    <p><span class="font-semibold">Tipo:</span> Docente</p>
-                    <p><span class="font-semibold">Leccionarios sin firmar:</span> ${foundTeacher.leccionarios}</p>
-                `;
-                personCardContainer.classList.remove('hidden');
-                renderPersonChart('teacher', foundTeacher);
-                return;
+            // Search in pending lesson plans data (teachers) - now using the dynamically calculated summary
+            if (!foundPerson) {
+                const teacher = pendingLessonPlansSummary.find(t => t.docente.toLowerCase() === searchTerm.toLowerCase());
+                if (teacher) {
+                    foundPerson = { type: 'teacher', data: teacher, source: 'lessonPlans' };
+                }
             }
 
-            // If no person found
-            noPersonFoundElement.classList.remove('hidden');
-            showMessageBox('No se encontró información para la persona ingresada. Por favor, verifique el nombre.');
+            // Search in Criterio 1 data (students)
+            if (!foundPerson) {
+                const studentC1 = criterio1Data.find(s => s.Estudiante.toLowerCase() === searchTerm.toLowerCase());
+                if (studentC1) {
+                    foundPerson = { type: 'student', data: studentC1, source: 'criterio1' };
+                }
+            }
+
+            // Search in Criterio 3 data (students)
+            if (!foundPerson) {
+                const studentC3 = criterio3Data.find(s => s.Estudiante.toLowerCase() === searchTerm.toLowerCase());
+                if (studentC3) {
+                    foundPerson = { type: 'student', data: studentC3, source: 'criterio3' };
+                }
+            }
+
+            if (foundPerson) {
+                personNameElement.innerText = foundPerson.data.Estudiante || foundPerson.data.docente;
+                if (foundPerson.type === 'student') {
+                    personDetailsElement.innerHTML = `
+                        <p><span class="font-semibold">Curso:</span> ${foundPerson.data.Curso}</p>
+                        <p><span class="font-semibold">RUT:</span> ${foundPerson.data.RUT}</p>
+                        <p><span class="font-semibold">Criterio MINEDUC:</span> ${foundPerson.data['Criterio MINEDUC']}</p>
+                        <p><span class="font-semibold">Porcentaje asistencia anual:</span> ${foundPerson.data['Porcentaje asistencia anual']}</p>
+                        <p><span class="font-semibold">Promedio general:</span> ${foundPerson.data['Promedio general']}</p>
+                        <p><span class="font-semibold">Promedios de asignatura bajo 4:</span> ${foundPerson.data['Promedios de asignatura bajo 4']}</p>
+                        <p><span class="font-semibold">Calificaciones faltantes:</span> ${parseInt(foundPerson.data['Calificaciones faltantes'])}</p>
+                        <p><span class="font-semibold">Asignaturas sin calificaciones:</span> ${parseInt(foundPerson.data['Asignaturas sin calificaciones'])}</p>
+                        <p><span class="font-semibold">Matrícula:</span> ${foundPerson.data.Matrícula}</p>
+                    `;
+                } else if (foundPerson.type === 'teacher') {
+                    personDetailsElement.innerHTML = `
+                        <p><span class="font-semibold">Leccionarios sin firmar:</span> ${foundPerson.data.leccionarios}</p>
+                    `;
+                }
+                personCardContainer.classList.remove('hidden');
+                updatePersonChart(foundPerson.type, foundPerson.data);
+            } else {
+                noPersonFoundElement.classList.remove('hidden');
+            }
         }
 
-        function renderPersonChart(type, data) {
-            const ctx = document.getElementById('personStatsChart').getContext('2d');
+        function updatePersonChart(type, data) {
+            const personCtx = document.getElementById('personStatsChart').getContext('2d');
+
             if (personStatsChart) {
-                personStatsChart.destroy();
+                personStatsChart.destroy(); // Destroy previous chart instance
             }
 
             if (type === 'student') {
-                personStatsChart = new Chart(ctx, {
+                // Ensure data properties are correctly accessed for students from Criterio 1, 3, or 4
+                const attendance = parseFloat(data['Porcentaje asistencia anual'].replace('%', ''));
+                const generalAverage = parseFloat(data['Promedio general']);
+
+                personStatsChart = new Chart(personCtx, {
                     type: 'bar',
                     data: {
-                        labels: ['Asistencia (%)', 'Promedio'],
+                        labels: ['Asistencia Anual (%)', 'Promedio General'],
                         datasets: [{
-                            label: 'Estadísticas del Estudiante',
-                            data: [parseFloat(data.asist), parseFloat(data.prom)],
-                            backgroundColor: [
-                                'rgba(54, 162, 235, 0.7)',
-                                'rgba(75, 192, 192, 0.7)'
-                            ],
-                            borderColor: [
-                                'rgba(54, 162, 235, 1)',
-                                'rgba(75, 192, 192, 1)'
-                            ],
-                            borderWidth: 1,
-                            borderRadius: 8
+                            label: 'Valor',
+                            data: [attendance, generalAverage],
+                            backgroundColor: ['#4ade80', '#22d3ee'],
+                            borderColor: ['#16a34a', '#06b6d4'],
+                            borderWidth: 1
                         }]
                     },
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
                         plugins: {
+                            legend: {
+                                display: false,
+                            },
                             title: {
                                 display: true,
-                                text: 'Estadísticas de Asistencia y Promedio',
-                                font: { size: 16, weight: 'bold' },
-                                color: '#334155'
-                            },
-                            legend: {
-                                display: false
+                                text: 'Estadísticas del Estudiante',
+                                font: {
+                                    size: 16
+                                }
                             },
                             datalabels: {
                                 color: '#fff',
-                                formatter: (value) => value,
+                                formatter: (value, context) => value,
                                 font: {
                                     weight: 'bold'
                                 }
@@ -1350,25 +1555,10 @@
                         scales: {
                             y: {
                                 beginAtZero: true,
-                                max: 100, // Max for percentage
+                                max: 100, // Max for attendance percentage
                                 title: {
                                     display: true,
-                                    text: 'Valor',
-                                    color: '#475569'
-                                },
-                                ticks: {
-                                    color: '#64748b'
-                                },
-                                grid: {
-                                    color: '#e2e8f0'
-                                }
-                            },
-                            x: {
-                                ticks: {
-                                    color: '#64748b'
-                                },
-                                grid: {
-                                    display: false
+                                    text: 'Valor'
                                 }
                             }
                         }
@@ -1376,35 +1566,35 @@
                     plugins: [ChartDataLabels]
                 });
             } else if (type === 'teacher') {
-                personStatsChart = new Chart(ctx, {
+                personStatsChart = new Chart(personCtx, {
                     type: 'bar',
                     data: {
-                        labels: ['Leccionarios sin firmar'],
+                        labels: ['Leccionarios sin Firmar'],
                         datasets: [{
-                            label: 'Leccionarios Pendientes',
+                            label: 'Cantidad',
                             data: [data.leccionarios],
-                            backgroundColor: 'rgba(255, 99, 132, 0.7)',
-                            borderColor: 'rgba(255, 99, 132, 1)',
-                            borderWidth: 1,
-                            borderRadius: 8
+                            backgroundColor: ['#f87171'],
+                            borderColor: ['#ef4444'],
+                            borderWidth: 1
                         }]
                     },
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
                         plugins: {
+                            legend: {
+                                display: false,
+                            },
                             title: {
                                 display: true,
-                                text: 'Leccionarios Pendientes del Docente',
-                                font: { size: 16, weight: 'bold' },
-                                color: '#334155'
-                            },
-                            legend: {
-                                display: false
+                                text: 'Estadísticas del Docente',
+                                font: {
+                                    size: 16
+                                }
                             },
                             datalabels: {
                                 color: '#fff',
-                                formatter: (value) => value,
+                                formatter: (value, context) => value,
                                 font: {
                                     weight: 'bold'
                                 }
@@ -1415,22 +1605,7 @@
                                 beginAtZero: true,
                                 title: {
                                     display: true,
-                                    text: 'Cantidad',
-                                    color: '#475569'
-                                },
-                                ticks: {
-                                    color: '#64748b'
-                                },
-                                grid: {
-                                    display: false
-                                }
-                            },
-                            x: {
-                                ticks: {
-                                    color: '#64748b'
-                                },
-                                grid: {
-                                    display: false
+                                    text: 'Cantidad'
                                 }
                             }
                         }
@@ -1440,13 +1615,83 @@
             }
         }
 
-        // Initial rendering of charts when the page loads
+        // Autocomplete / Suggestions Logic
+        const personSearchInput = document.getElementById('personSearch');
+        const suggestionsBox = document.getElementById('suggestionsBox');
+
+        function generateAllSearchableNames() {
+            const namesSet = new Set();
+
+            // Add student names from Criterio 1, 3, and 4 data
+            criterio1Data.forEach(s => namesSet.add(s.Estudiante));
+            criterio3Data.forEach(s => namesSet.add(s.Estudiante));
+            criterio4Data.forEach(s => namesSet.add(s.Estudiante));
+
+            // Add teacher names from the dynamically calculated pendingLessonPlansSummary
+            pendingLessonPlansSummary.forEach(t => namesSet.add(t.docente));
+
+            allSearchableNames = Array.from(namesSet).sort();
+        }
+
+        function updateSuggestions() {
+            const inputValue = personSearchInput.value.toLowerCase();
+            suggestionsBox.innerHTML = '';
+
+            if (inputValue.length === 0) {
+                hideSuggestions();
+                return;
+            }
+
+            const filteredSuggestions = allSearchableNames.filter(name =>
+                name.toLowerCase().includes(inputValue)
+            );
+
+            if (filteredSuggestions.length > 0) {
+                filteredSuggestions.forEach(name => {
+                    const suggestionItem = document.createElement('div');
+                    suggestionItem.classList.add('suggestion-item');
+                    suggestionItem.textContent = name;
+                    suggestionItem.onclick = () => selectSuggestion(name);
+                    suggestionsBox.appendChild(suggestionItem);
+                });
+                showSuggestions();
+            } else {
+                hideSuggestions();
+            }
+        }
+
+        function selectSuggestion(name) {
+            personSearchInput.value = name;
+            hideSuggestions();
+            displayPersonStats(); // Trigger search after selecting a suggestion
+        }
+
+        function showSuggestions() {
+            suggestionsBox.classList.remove('hidden');
+        }
+
+        function hideSuggestions() {
+            suggestionsBox.classList.add('hidden');
+        }
+
+        // Event listeners for suggestions
+        personSearchInput.addEventListener('input', updateSuggestions);
+        personSearchInput.addEventListener('focus', updateSuggestions); // Show suggestions on focus
+        personSearchInput.addEventListener('blur', () => {
+            // Delay hiding to allow click event on suggestion to fire
+            setTimeout(hideSuggestions, 100);
+        });
+
+
+        // Initialize charts and populate tables on window load
         window.onload = function() {
-            renderRiskCriteriaChart();
-            renderReadingPieChart();
-            renderCoordinationChart();
-            // Ensure the first sub-tab of "Base de Datos" is active and populated on load
-            openSubTab('subTabLessonPlans'); // Call with default sub-tab ID, no event object
+            initializeCharts();
+            populateLessonPlanSubTab();
+            populateMainLessonPlansTab(); // Call this new function
+            populateCriterio1Table();
+            populateCriterio3Table();
+            populateCriterio4Table();
+            generateAllSearchableNames(); // Generate names for autocomplete
         };
     </script>
 </body>
